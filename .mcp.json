@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "chatmate": {
+      "type": "http",
+      "url": "https://chatmate-plum.vercel.app/api/mcp"
+    }
+  }
+}

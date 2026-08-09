@@ -1,0 +1,36 @@
+{
+  "name": "chatmate",
+  "version": "0.1.0",
+  "description": "Search minimized Telegram memory and prepare owner-only companion reports through the ChatMate remote MCP.",
+  "author": {
+    "name": "ChatMate",
+    "url": "https://github.com/saplq"
+  },
+  "homepage": "https://chatmate-plum.vercel.app",
+  "repository": "https://github.com/saplq/chatmate-plugin",
+  "license": "MIT",
+  "keywords": ["chatmate", "telegram", "memory", "mcp", "reports"],
+  "skills": "./skills/",
+  "mcpServers": "./.codex-plugin/mcp.json",
+  "interface": {
+    "displayName": "ChatMate",
+    "shortDescription": "Use your authorized Telegram memory safely",
+    "longDescription": "Connect ChatMate to search minimized owner-authorized Telegram memory, inspect source coverage, and prepare bounded companion reports without exposing raw Telegram payloads or arbitrary recipients.",
+    "developerName": "ChatMate",
+    "category": "Productivity",
+    "capabilities": ["Interactive", "Read"],
+    "websiteURL": "https://chatmate-plum.vercel.app",
+    "privacyPolicyURL": "https://github.com/saplq/chatmate-plugin/blob/main/PRIVACY.md",
+    "termsOfServiceURL": "https://github.com/saplq/chatmate-plugin/blob/main/TERMS.md",
+    "supportURL": "https://github.com/saplq/chatmate-plugin/issues",
+    "defaultPrompt": [
+      "Check my ChatMate connection and source coverage",
+      "Find relevant evidence in my ChatMate memory",
+      "Prepare a bounded owner report from ChatMate evidence"
+    ],
+    "composerIcon": "./assets/chatmate-mark.png",
+    "logo": "./assets/chatmate-avatar.jpg",
+    "screenshots": [],
+    "brandColor": "#1677A7"
+  }
+}
