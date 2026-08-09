@@ -13,7 +13,7 @@ ChatMate connects ChatGPT and Claude to a single remote MCP at `https://chatmate
 
 ## Install for private beta
 
-For Claude, add this public repository as a plugin marketplace or install the plugin directly, then complete MCP OAuth. For OpenAI, add the repository as a private Git marketplace/plugin package where that surface is available, then complete MCP OAuth. See [SETUP.md](SETUP.md).
+For Claude, run `/plugin marketplace add saplq/chatmate-plugin`, then `/plugin install chatmate@chatmate` and complete MCP OAuth. For OpenAI, add the repository as a private Git marketplace/plugin package where that surface is available, then complete MCP OAuth. See [SETUP.md](SETUP.md).
 
 Public directory listings are not claimed until OpenAI and Anthropic approve their respective submissions.
 

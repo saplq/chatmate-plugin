@@ -10,11 +10,13 @@ codex = json.loads((ROOT / ".codex-plugin/plugin.json").read_text())
 claude = json.loads((ROOT / ".claude-plugin/plugin.json").read_text())
 codex_mcp = json.loads((ROOT / ".codex-plugin/mcp.json").read_text())
 claude_mcp = json.loads((ROOT / ".mcp.json").read_text())
+marketplace = json.loads((ROOT / ".claude-plugin/marketplace.json").read_text())
 
 assert codex["name"] == claude["name"] == "chatmate"
 assert codex["version"] == claude["version"] == VERSION
 assert codex_mcp["mcpServers"]["chatmate"]["url"] == MCP_URL
 assert claude_mcp["mcpServers"]["chatmate"]["url"] == MCP_URL
+assert marketplace["plugins"][0]["source"]["repo"] == "saplq/chatmate-plugin"
 skill = (ROOT / "skills/chatmate/SKILL.md").read_text()
 assert f'packageVersion: "{VERSION}"' in skill
 assert "connection code" in skill.lower() and "never ask" in skill.lower()
