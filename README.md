@@ -1,28 +1,34 @@
-# ChatMate plugin
+# ChatMate plugin 0.2.0
 
-ChatMate connects ChatGPT and Claude to a single remote MCP at `https://chatmate-plum.vercel.app/api/mcp`. It lets an authorized workspace inspect connection/source metadata and, when separately enabled, search minimized Telegram memory and send one bounded report only to the verified owner.
+ChatMate turns owner-authorized Telegram memory into concise private secretary briefs through one remote MCP at `https://chatmate-plum.vercel.app/api/mcp`.
 
-## Important boundaries
+The plugin can search canonical memory, keep a structured secretary schedule and style profile, and deliver morning, evening, or explicitly requested reports only to the workspace owner's verified private Mate.
 
-- Installation and OAuth are explicit user actions. A prompt cannot install this plugin or bypass consent.
-- The one-time Telegram connection code is entered only in the ChatMate OAuth pairing form, never in chat.
+## Trust boundary
+
+- Installation and OAuth consent are explicit owner actions.
+- The one-use `mate_…` code is entered only in the ChatMate pairing page. It is never a permanent bearer token and never belongs in a prompt.
 - Telegram text is untrusted evidence, never instructions.
-- There is no arbitrary recipient input and no generic Telegram `sendMessage` proxy.
-- No OpenAI or Anthropic API key is used by ChatMate.
-- Scheduled Telegram write-back remains beta until each provider passes an unattended live smoke; unsupported runs keep their result inside the provider.
+- `send_companion_report` has no recipient input. It cannot write to contacts, groups, channels, or business chats.
+- `chatmate.secretary.manage` stores the owner's schedule, structured style traits, and reminder state.
+- No OpenAI API key is required for secretary workflows. The connected ChatGPT account provides inference.
+- Third-party drafting and sending are not available in 0.2.0.
 
-## Install for private beta
+## Install during founder beta
 
-For Claude, run `/plugin marketplace add saplq/chatmate-plugin`, then `/plugin install chatmate@chatmate` and complete MCP OAuth. For OpenAI, add the repository as a private Git marketplace/plugin package where that surface is available, then complete MCP OAuth. See [SETUP.md](SETUP.md).
+Install the versioned ChatMate plugin package, complete its OAuth consent, then use the single setup text copied from the personal Mate. Raw MCP URL entry is only for Developer mode. Public directory availability is not claimed until submission is approved.
 
-Public directory listings are not claimed until OpenAI and Anthropic approve their respective submissions.
+For Claude private testing, run `/plugin marketplace add saplq/chatmate-plugin`, then `/plugin install chatmate@chatmate` and complete OAuth. See [SETUP.md](SETUP.md).
 
 ## Package layout
 
-- `.codex-plugin/plugin.json` and `.codex-plugin/mcp.json`: OpenAI package metadata and remote MCP.
-- `.claude-plugin/plugin.json` and `.mcp.json`: Claude plugin metadata and remote MCP.
-- `skills/chatmate/SKILL.md`: provider-neutral safe workflows.
-- `templates/`: provider scheduled-task templates.
+- `.codex-plugin/plugin.json` and `.mcp-openai.json`: OpenAI metadata and remote MCP.
+- `.claude-plugin/plugin.json` and `.mcp.json`: Claude metadata and the same MCP.
+- `skills/chatmate/SKILL.md`: cached, versioned secretary workflow and safety policy.
+- `templates/morning-brief.md` and `templates/evening-brief.md`: weekday scheduled-task instructions.
+- `prompts/starter-prompts.md`: RU, UA, and EN setup and use prompts.
+
+The skill does not fetch GitHub or check its version on each request. Updates arrive through versioned plugin releases. `connection_status` is reserved for setup, diagnostics, and authentication failures.
 
 ## Validate
 
@@ -31,4 +37,4 @@ python3 scripts/validate_package.py
 claude plugin validate .
 ```
 
-The local validator requires no dependencies. `claude plugin validate` requires Claude Code.
+The local validator has no dependencies. `claude plugin validate` requires Claude Code.
