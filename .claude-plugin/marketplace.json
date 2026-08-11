@@ -5,7 +5,7 @@
     "url": "https://github.com/saplq"
   },
   "description": "ChatMate private-beta plugins",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "plugins": [
     {
       "name": "chatmate",
@@ -15,8 +15,8 @@
         "repo": "saplq/chatmate-plugin",
         "ref": "main"
       },
-      "description": "Use minimized owner-authorized Telegram memory through the ChatMate remote MCP.",
-      "version": "0.1.0",
+      "description": "Use owner-authorized Telegram memory for private ChatMate Secretary briefs.",
+      "version": "0.2.0",
       "category": "Productivity",
       "tags": ["telegram", "memory", "mcp"]
     }

@@ -1,7 +1,7 @@
 {
   "name": "chatmate",
-  "version": "0.1.0",
-  "description": "Search minimized Telegram memory and prepare owner-only companion reports through the ChatMate remote MCP.",
+  "version": "0.2.0",
+  "description": "Use authorized Telegram memory for private morning, evening, and on-demand ChatMate Secretary briefs.",
   "author": {
     "name": "ChatMate",
     "url": "https://github.com/saplq"
@@ -11,22 +11,22 @@
   "license": "MIT",
   "keywords": ["chatmate", "telegram", "memory", "mcp", "reports"],
   "skills": "./skills/",
-  "mcpServers": "./.codex-plugin/mcp.json",
+  "mcpServers": "./.mcp-openai.json",
   "interface": {
     "displayName": "ChatMate",
-    "shortDescription": "Use your authorized Telegram memory safely",
-    "longDescription": "Connect ChatMate to search minimized owner-authorized Telegram memory, inspect source coverage, and prepare bounded companion reports without exposing raw Telegram payloads or arbitrary recipients.",
+    "shortDescription": "Your private secretary for Telegram memory",
+    "longDescription": "Connect ChatMate to search minimized owner-authorized Telegram memory, configure weekday secretary briefs, and deliver bounded interactive reports only to your verified private Mate.",
     "developerName": "ChatMate",
     "category": "Productivity",
-    "capabilities": ["Interactive", "Read"],
+    "capabilities": ["Interactive", "Read", "Write"],
     "websiteURL": "https://chatmate-plum.vercel.app",
     "privacyPolicyURL": "https://github.com/saplq/chatmate-plugin/blob/main/PRIVACY.md",
     "termsOfServiceURL": "https://github.com/saplq/chatmate-plugin/blob/main/TERMS.md",
     "supportURL": "https://github.com/saplq/chatmate-plugin/issues",
     "defaultPrompt": [
-      "Check my ChatMate connection and source coverage",
-      "Find relevant evidence in my ChatMate memory",
-      "Prepare a bounded owner report from ChatMate evidence"
+      "Set up my ChatMate Secretary for weekday morning and evening briefs",
+      "Настрой моего секретаря ChatMate на утро и вечер по будням",
+      "Налаштуй секретаря ChatMate на ранкові й вечірні звіти у будні"
     ],
     "composerIcon": "./assets/chatmate-mark.png",
     "logo": "./assets/chatmate-avatar.jpg",

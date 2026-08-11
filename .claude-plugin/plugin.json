@@ -2,8 +2,8 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "chatmate",
   "displayName": "ChatMate",
-  "version": "0.1.0",
-  "description": "Use minimized owner-authorized Telegram memory through the ChatMate remote MCP.",
+  "version": "0.2.0",
+  "description": "Use owner-authorized Telegram memory for private ChatMate Secretary briefs.",
   "author": {
     "name": "ChatMate",
     "url": "https://github.com/saplq"
