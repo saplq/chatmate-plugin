@@ -3,23 +3,24 @@ import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-VERSION = "0.1.0"
+VERSION = "0.2.0"
 MCP_URL = "https://chatmate-plum.vercel.app/api/mcp"
 
 codex = json.loads((ROOT / ".codex-plugin/plugin.json").read_text())
-claude = json.loads((ROOT / ".claude-plugin/plugin.json").read_text())
-codex_mcp = json.loads((ROOT / ".codex-plugin/mcp.json").read_text())
-claude_mcp = json.loads((ROOT / ".mcp.json").read_text())
-marketplace = json.loads((ROOT / ".claude-plugin/marketplace.json").read_text())
+mcp = json.loads((ROOT / ".mcp.json").read_text())
 
-assert codex["name"] == claude["name"] == "chatmate"
-assert codex["version"] == claude["version"] == VERSION
-assert codex_mcp["mcpServers"]["chatmate"]["url"] == MCP_URL
-assert claude_mcp["mcpServers"]["chatmate"]["url"] == MCP_URL
-assert marketplace["plugins"][0]["source"]["repo"] == "saplq/chatmate-plugin"
+assert codex["name"] == "chatmate"
+assert codex["version"] == VERSION
+assert codex["mcpServers"] == "./.mcp.json"
+assert mcp["mcpServers"]["chatmate"]["url"] == MCP_URL
+assert set(mcp["mcpServers"]["chatmate"]) == {"type", "url"}
+assert not (ROOT / ".claude-plugin/plugin.json").exists()
+assert not (ROOT / ".claude-plugin/marketplace.json").exists()
 skill = (ROOT / "skills/chatmate/SKILL.md").read_text()
-assert f'packageVersion: "{VERSION}"' in skill
-assert "connection code" in skill.lower() and "never ask" in skill.lower()
+assert f"Package version: `{VERSION}`" in skill
+assert "connection_status" in skill and "empty input object" in skill
+assert "fallback connection code" in skill.lower() and "never ask" in skill.lower()
+assert "search_memory" not in skill and "get_memory_context" not in skill
 for path in ROOT.rglob("*"):
     if path.is_file() and ".git" not in path.parts:
         content = path.read_bytes()
