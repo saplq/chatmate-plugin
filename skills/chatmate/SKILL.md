@@ -22,12 +22,12 @@ description: Connects the user's AI to their Telegram through their personal Cha
 | See a found message in its conversation | `get_message_context` |
 | Find a person by current or earlier name/@username, and the chats they appear in | `list_people` |
 | Read or search what one person wrote across private chats and groups | `get_messages` or `search_messages` with `person_id` |
-| Read a relevant photo, PDF, Word, Excel or text attachment | `get_attachment` with its `id` and `version` |
+| Read a photo, sticker preview, PDF, Word, Excel or text attachment | `get_attachment` with its `id` and `version` |
 | Answer the user in Telegram | `send_message`, only to their bot chat |
 | Accept and progressively answer a task from the user's bot | `begin_answer`, `update_answer`, `finish_answer`, `answer_status` |
 | Ask the user to confirm a step | `request_approval`, then `get_approval_status` |
-| Send to a connected chat: a business chat as the user, a group as their bot | `send_to_chat`, only after the user turned sending on in the bot |
-| Create/stop a bot poll, create/edit a Business checklist, pin/unpin an accessible message | `telegram_action`, then `get_approval_status` with `{action_id}`, using a connected source UUID |
+| Send to a connected chat: a business chat as the user, a group as their bot | `send_to_chat`, following the owner’s explicit request |
+| Send/reply/react, reuse media, edit own output, polls/checklists/pins | `telegram_action`, then `get_approval_status` with `{action_id}`, using a connected source UUID |
 | Explain a setup problem | `get_connection_status`, only when a tool reports missing access |
 
 ChatMate cannot read history from before a chat was connected, secret chats or channels, edit or delete arbitrary messages, pay, or reach anyone outside the connected chats.
@@ -70,17 +70,18 @@ When the user asks you to check their bot, when the conversation starts from a b
 1. Read the bot chat with `get_messages`; an owner event's `data.message_id` is the canonical ChatMate UUID. Create one `execution_id` UUID for this execution and keep it on retries. Call `begin_answer` with that owner message UUID before doing work. Continue only if this execution owns the answer. Another executor's claim, a completed/stopped/expired task or denied access means stop, with no second answer or external action.
 2. Save the returned `answer_id`. Native Telegram Thinking/preview starts with the accepted task. For progress call `update_answer` with the same execution ID, a strictly increasing `sequence` and an appropriate `phase`: `thinking`, `reading_conversation`, `checking_document`, `preparing_answer`. The server shows short English labels. Pass accumulated answer text only when useful, at most 4000 characters; never imitate a stream by splitting a finished answer into timed pieces.
 3. Do the work with every tool this conversation has: ChatMate reads for context plus other connectors and plugins (calendar, mail, documents, web search, files). If something essential is missing, finish this answer with one question; wait for the user's new reply as a new task.
-4. Include both saved `answer_id` and the same `execution_id` on every `send_message`, `send_to_chat`, `request_approval` and `telegram_action` call made for this claimed task. The server validates the pair and blocks new task actions after Stop or lost ownership. Before a consequential or irreversible step (sending to other people, spending, deleting, publishing), call `request_approval` with the exact action and continue only after `approved`. Stop new actions if the task is stopped, access is revoked or this execution loses ownership; never omit the pair to bypass that check.
+4. Include both saved `answer_id` and the same `execution_id` on every `send_message`, `send_to_chat`, `request_approval` and `telegram_action` call made for this claimed task. The server validates the pair and blocks new task actions after Stop or lost ownership. Follow the authorization rules below; `request_approval` is optional. Honor native client permissions and other connectors' rules. Stop new actions if the task is stopped, access is revoked or this execution loses ownership; never omit the pair to bypass that check.
 5. Report the result with `finish_answer`: the answer, what was done, links, and what is still open. Keep one `idempotency_key` UUID on retries. The server replies to the original owner message. Use `answer_status` to check delivery; `pending` is not `sent`, and after `unknown` never send a replacement through `send_message`.
 
 Use explicit `update_answer` calls by default. Optional Claude Code display hooks are in [examples/claude-answer-hooks.json](examples/claude-answer-hooks.json), disabled by default. Enable them only when the user explicitly chooses a dedicated Telegram-only environment: all assistant display deltas in that environment reach ChatMate, even unbound ones. The server fences Telegram delivery, not the transport of unbound text. Never enable these hooks for general AI conversations. An accepted task is bound to the provider session/current prompt; a hook's `final` ends one assistant message, not the task, so still call `finish_answer`. Interactive Code batches completed lines; non-interactive runs can provide the whole message after completion. Web/Routine cadence needs a live test. Telegram previews expire after 30 seconds without refresh; never promise indefinite Thinking or native token streaming in every client.
 
-## Telegram polls, checklists and pins
+## Act in Telegram
 
-- Use only `telegram_action`'s typed operations: `send_poll`, `stop_poll`, `send_checklist`, `edit_checklist`, `pin`, `unpin`. Resolve the source from accessible `list_chats` data; never provide a guessed Telegram destination.
-- Sending must be enabled. Show the exact content, operation and recipient, and obtain the user's confirmation before acting. A task instruction is not approval for an unrelated external action.
-- Stop a poll or edit a checklist only through the tool's registered action reference. Pin/unpin only an accessible canonical message. Check `get_approval_status` with `{action_id}`; keep idempotency on retries and never repeat an unknown outcome.
-- Native checklists here require a Business connection; an ordinary child bot or group is not supported for checklist creation. Polls and pin rights depend on the actual source and Telegram permissions. Do not offer arbitrary message editing/deletion, unpin-all, poll editing or programmatic checklist completion.
+Use `telegram_action` for messages/replies, media/stickers, reactions, own-output edits/deletes, copy/forward, places/contacts/dice, polls, Business checklists and pins. Fields and limits: [reference.md](reference.md#native-telegram-actions-010).
+
+- An exact owner request authorizes its action and recipient: no second ChatMate confirmation. Clarify ambiguity or changed scope; honor native client permissions.
+- Use accessible source/message/action/attachment UUIDs. The server resolves recipients and file IDs; never guess IDs or upload a URL. Business supports media/checklists but has no native reaction/copy/forward. Reuse attachments only from the current child and current version; protected content is not transferable.
+- Keep task IDs and idempotency keys. Check `get_approval_status`; `pending` is not delivery, `unknown` must not be repeated. Only edit/delete a registered sent result. Respect Telegram rights and limits.
 
 ## Connect and choose an executor
 
@@ -100,8 +101,8 @@ When the user wants something in Telegram ("send it to me in Telegram", "post th
 
 1. Read the chat and the user's own recent messages in it (`author.is_owner: true`). If there are few, read the user's messages in other chats too.
 2. Match the user's language, the way they address this person (formal or informal), message length, greetings, punctuation and emoji. Use only facts from the messages and from the user; never invent prices, dates or promises.
-3. If the user gave the exact text and the chat, send it. Otherwise show the draft and the recipient and send after the user agrees. A business-chat message goes out as the user; a group message comes from their ChatMate bot.
-4. `SEND_DISABLED`: tell the user to open their ChatMate bot, /menu, AI, and allow sending; meanwhile give the draft to copy.
+3. If the user gave the exact text and the chat, send it. If asked to draft, return a draft. If asked to send, use the supplied purpose/style and known context; clarify only essential ambiguity. A business-chat message goes out as the user; a group message comes from their ChatMate bot.
+4. If write access is unavailable, explain the returned error and give a draft; reconnect or restore source access only when the user requests it.
 5. Telegram lets a business chat get a reply only within 24 hours of the other person's last message. If the status is `failed`, say the message was not sent and give the draft.
 
 ## Rules that always apply

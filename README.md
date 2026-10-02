@@ -46,6 +46,14 @@ Complete Telegram sign-in and **Allow**. The connector provides tools; use the s
 
 Use explicit `update_answer` calls by default. The packaged [Claude Code display-hook example](skills/chatmate/examples/claude-answer-hooks.json) is disabled. Enable it only after explicitly choosing a dedicated Telegram-only project/environment; never install it globally or in a general AI-chat environment. It forwards every assistant display delta from that environment, including unbound text.
 
+## Telegram actions in 0.10.0
+
+A specific owner request authorizes the requested action and recipient. No additional ChatMate send switch or mandatory confirmation card is required; your AI client's write permissions and Telegram rights still apply. ChatMate supports 18 typed actions: text/replies/quotes, stored photos/documents/video/audio/voice/video notes/animations/stickers, reactions, edits and deletion of its own registered sends, copy/forward, locations/venues/contacts/dice, polls/quizzes and closing them, Business checklists and editing them, and pin/unpin.
+
+Native checklists require a Business private chat. Reactions and native copy/forward are available in ordinary bot chats/groups, not on behalf of a Business user. Business replies and edits require an active connection with reply rights and a recent incoming message. Media reuse is limited to currently accessible attachments for the same child bot; new arbitrary uploads are not supported. Static sticker previews are readable on demand.
+
+The complete [feature map and implementation references](https://github.com/saplq/chatmate/blob/main/docs/features.md) include prior capabilities and known limits. The [live test register](https://github.com/saplq/chatmate/blob/main/docs/live-tests.md) keeps real Telegram/provider checks separate from code and deployment verification.
+
 ## Your data
 
 History starts when a chat is connected; ChatMate keeps its latest 60 days. Earlier messages, Secret Chats and channels are unavailable. Manage connected chats, AI access, export and deletion at [My data](https://www.getchatmate.com/data-controls). Read the [privacy policy](https://www.getchatmate.com/en/privacy).

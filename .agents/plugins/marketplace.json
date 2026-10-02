@@ -9,7 +9,7 @@
     {
       "name": "chatmate",
       "source": "./",
-      "description": "Read the Telegram chats connected to your personal ChatMate bot, reply to you in that bot and ask for your approval before consequential actions.",
+      "description": "Read connected Telegram chats and files, receive bot answers and perform the Telegram actions you request.",
       "category": "Productivity"
     }
   ]
