@@ -31,7 +31,7 @@
 
 ## People
 
-`list_people` returns people who wrote or reacted in the connected chats in all available stored history, most recently active first: `person_id`, `display_name`, `username`, `is_owner`, `is_bot`, `messages` and `reactions` counts, `first_seen`, `last_seen`, and up to 20 `chats` with their own counts. `query` matches part of a name or @username. Names are what Telegram showed at the time and can repeat; telling people apart by `username` and `chats` is more reliable. Chat events such as joins are not counted as messages. `next_cursor` continues a people list: pass it as `cursor` and repeat the same `query` and `chat_ids`; you can omit `limit` on continuation.
+`list_people` returns people who wrote or reacted in the connected chats in the latest 60 days of stored history, most recently active first: `person_id`, `display_name`, `username`, `is_owner`, `is_bot`, `messages` and `reactions` counts, `first_seen`, `last_seen`, and up to 20 `chats` with their own counts. `query` matches part of a name or @username. Names are what Telegram showed at the time and can repeat; telling people apart by `username` and `chats` is more reliable. Chat events such as joins are not counted as messages. `next_cursor` continues a people list: pass it as `cursor` and repeat the same `query` and `chat_ids`; you can omit `limit` on continuation.
 
 ## Service event types
 
@@ -70,5 +70,5 @@
 ## Limits and paging
 
 - Up to 50 items and 64 KB per call; `next_cursor` continues the same query, `truncated: true` means there is more.
-- Stored history has no time limit at this stage. Without dates, reads cover all available stored history, with bounded pages; date ranges have no duration ceiling.
+- History keeps the latest 60 days, starting at connection. Without dates, reads cover that available history in bounded pages. A wider date range is clipped to the current 60-day window.
 - To finish a long message call `get_messages` with `message_id` and `text_cursor`.

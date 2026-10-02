@@ -44,7 +44,7 @@ ChatMate cannot read history from before a chat was connected, secret chats or c
    - `deleted: true` marks a message deleted in a private chat: it existed at that time, but its author and text are gone. Say so instead of guessing what it said. Telegram does not report deletions in groups.
 3. Cite the chat title, the author and the date. There are no links to Telegram messages.
 4. Follow a person across chats: `author.person_id` is the same person in every connected chat, private or group. For "what did Ivan write to me and in the group", call `list_people` with "Ivan", pick the right person (names can repeat: compare `username` and `chats`), then `get_messages` with that `person_id` and no `chat_id`. The user's own `person_id` has `is_owner: true`. Anonymous chat senders have no human `person_id`; do not join them by name. Names and usernames come only from the chats in the returned scope. Follow `next_cursor` with the same query and chat filters to finish a people list; the cursor also covers entries omitted by the response budget.
-5. History currently has no time limit; use pages to read older stored messages. Check `coverage`. If the period asked about starts before `observed_from` or overlaps a `known_gaps` entry, say which part is missing instead of guessing. Few or no messages can simply mean a quiet chat or a recent connection.
+5. History keeps the latest 60 days, starting at connection; use pages to read stored messages within that period. Check `coverage`. If the period asked about starts before `observed_from` or overlaps a `known_gaps` entry, say which part is missing instead of guessing. Few or no messages can simply mean a quiet chat or a recent connection.
 
 ## Do a task from the user's bot
 

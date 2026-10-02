@@ -4,7 +4,7 @@ ChatMate is a bridge between your AI and your Telegram. Your personal ChatMate b
 
 ## Before you start
 
-Open [@chatmate_aibot](https://t.me/chatmate_aibot?start=setup), create your bot and connect your chats there. History starts when a chat is connected.
+Open [@chatmate_aibot](https://t.me/chatmate_aibot?start=setup), create your bot and connect your chats there. History starts when a chat is connected; the latest 60 days are kept.
 
 ## Claude (web, desktop, mobile)
 
