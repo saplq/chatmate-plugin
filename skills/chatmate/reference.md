@@ -4,6 +4,8 @@
 - Message fields
 - Service event types
 - Coverage and gap reasons
+- Sending and statuses
+- Errors
 - Limits and paging
 
 ## Message fields
@@ -37,6 +39,24 @@
   - `raw_expired`, `retries_exhausted`: ChatMate could not process the message in time.
 - `unprocessed_media_count`: photos, videos, voice messages and files whose content was not read.
 - Deleted messages are not returned.
+
+## Sending and statuses
+
+- `send_message` goes only to the user's chat with their bot. `send_to_chat` goes to one business chat (as the user, through Chat Automation) or one group (as the user's ChatMate bot).
+- Text is plain, up to 4000 characters per call. `reply_to_message_id` is a Telegram message number in that chat, not a ChatMate `id`; you get one only from a bot event (`data.message_id`), otherwise leave it out.
+- Statuses: `pending` (queued), `sent`, `awaiting_owner` (a confirmation request waits for the user), `approved`, `declined`, `failed` (Telegram refused, nothing was sent), `unknown` (Telegram did not answer: do not send again, tell the user to check the chat).
+
+## Errors
+
+| Code | Meaning | What to do |
+|---|---|---|
+| `INVALID_TOKEN` | The AI connection expired or was turned off | Ask the user to reconnect ChatMate |
+| `CONSENT_REQUIRED` | Storage or writing is not allowed yet | Point the user to their ChatMate bot or getchatmate.com/data-controls |
+| `SEND_DISABLED` | Sending to chats is off | The user turns it on: bot, /menu, AI |
+| `FORBIDDEN`, `NOT_FOUND` | The chat or message is not available to this connection | Use `list_chats` again; the chat may be turned off |
+| `CURSOR_INVALID`, `CURSOR_EXPIRED` | A page cursor no longer matches | Repeat the request without the cursor |
+| `INVALID_ARGUMENT` | Wrong input, for example a date range over 90 days | Fix the input |
+| `TEMPORARY_UNAVAILABLE` | ChatMate could not answer | Retry once, then tell the user |
 
 ## Limits and paging
 

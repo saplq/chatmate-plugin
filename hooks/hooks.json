@@ -1,0 +1,17 @@
+{
+  "description": "ChatMate reads and messages to the user's own bot chat run without a prompt each time. send_to_chat, which writes to other people, still asks.",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "^mcp__.*[Cc]hat_?[Mm]ate.*__(get_connection_status|list_chats|get_messages|search_messages|get_message_context|get_approval_status|send_message|request_approval)$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "printf '%s\\n' '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"allow\",\"permissionDecisionReason\":\"ChatMate: reads your connected chats or writes only to your own bot chat\"}}'",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}
