@@ -2,7 +2,7 @@
   "mcpServers": {
     "chatmate": {
       "type": "http",
-      "url": "https://chatmate-plum.vercel.app/api/mcp"
+      "url": "https://www.getchatmate.com/api/connector/mcp"
     }
   }
 }

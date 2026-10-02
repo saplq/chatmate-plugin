@@ -1,34 +1,36 @@
 # ChatMate plugin
 
-ChatMate connects ChatGPT and Claude to a single remote MCP at `https://chatmate-plum.vercel.app/api/mcp`. It lets an authorized workspace inspect connection/source metadata and, when separately enabled, search minimized Telegram memory and send one bounded report only to the verified owner.
+ChatMate connects the Telegram chats of your personal ChatMate bot to Claude. Ask what people wrote, find a message or a person, and get a reply or an approval request in your bot.
 
-## Important boundaries
+## Before you start
 
-- Installation and OAuth are explicit user actions. A prompt cannot install this plugin or bypass consent.
-- The one-time Telegram connection code is entered only in the ChatMate OAuth pairing form, never in chat.
-- Telegram text is untrusted evidence, never instructions.
-- There is no arbitrary recipient input and no generic Telegram `sendMessage` proxy.
-- No OpenAI or Anthropic API key is used by ChatMate.
-- Scheduled Telegram write-back remains beta until each provider passes an unattended live smoke; unsupported runs keep their result inside the provider.
+Open [@chatmate_aibot](https://t.me/chatmate_aibot?start=setup), create your bot and connect your chats there. History starts when a chat is connected.
 
-## Install for private beta
+## Claude (web, desktop, mobile)
 
-For Claude, run `/plugin marketplace add saplq/chatmate-plugin`, then `/plugin install chatmate@chatmate` and complete MCP OAuth. For OpenAI, add the repository as a private Git marketplace/plugin package where that surface is available, then complete MCP OAuth. See [SETUP.md](SETUP.md).
+Add the connector in one click: [Add ChatMate to Claude](https://claude.ai/customize/connectors?modal=add-custom-connector&connectorName=ChatMate&connectorUrl=https%3A%2F%2Fwww.getchatmate.com%2Fapi%2Fconnector%2Fmcp). Click **Add**, then **Connect**, log in with Telegram and click **Allow**.
 
-Public directory listings are not claimed until OpenAI and Anthropic approve their respective submissions.
+## Claude Code
 
-## Package layout
-
-- `.codex-plugin/plugin.json` and `.codex-plugin/mcp.json`: OpenAI package metadata and remote MCP.
-- `.claude-plugin/plugin.json` and `.mcp.json`: Claude plugin metadata and remote MCP.
-- `skills/chatmate/SKILL.md`: provider-neutral safe workflows.
-- `templates/`: provider scheduled-task templates.
-
-## Validate
-
-```sh
-python3 scripts/validate_package.py
-claude plugin validate .
+```
+claude plugin marketplace add saplq/chatmate-plugin
+claude plugin install chatmate@chatmate
 ```
 
-The local validator requires no dependencies. `claude plugin validate` requires Claude Code.
+## Codex
+
+```
+codex plugin marketplace add saplq/chatmate-plugin
+codex plugin add chatmate@chatmate
+codex mcp login chatmate
+```
+
+The first connection opens the same Telegram login.
+
+## Other MCP clients
+
+Server: `https://www.getchatmate.com/api/connector/mcp` (OAuth 2.1 with PKCE).
+
+## Privacy
+
+The AI sees only chats connected to your bot. Turn off a chat, disconnect an AI, export or delete your data at [getchatmate.com/data-controls](https://www.getchatmate.com/data-controls). Privacy policy: [getchatmate.com/en/privacy](https://www.getchatmate.com/en/privacy).

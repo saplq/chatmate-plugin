@@ -4,16 +4,13 @@
     "name": "ChatMate",
     "url": "https://www.getchatmate.com"
   },
-  "metadata": {
-    "description": "ChatMate plugin for Claude Code: the ChatMate connector and the chatmate skill."
-  },
+  "description": "ChatMate plugin for Codex: the ChatMate connector and the chatmate skill.",
   "plugins": [
     {
       "name": "chatmate",
       "source": "./",
       "description": "Read the Telegram chats connected to your personal ChatMate bot, reply to you in that bot and ask for your approval before consequential actions.",
-      "category": "productivity",
-      "homepage": "https://www.getchatmate.com/connect"
+      "category": "Productivity"
     }
   ]
 }

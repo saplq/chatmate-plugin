@@ -1,17 +1,19 @@
 {
-  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "chatmate",
   "displayName": "ChatMate",
-  "version": "0.1.0",
-  "description": "Use minimized owner-authorized Telegram memory through the ChatMate remote MCP.",
+  "version": "0.3.0",
+  "description": "Read the Telegram chats connected to your personal ChatMate bot, reply to you in that bot and ask for your approval before consequential actions.",
   "author": {
     "name": "ChatMate",
-    "url": "https://github.com/saplq"
+    "url": "https://www.getchatmate.com"
   },
-  "homepage": "https://chatmate-plum.vercel.app",
+  "homepage": "https://www.getchatmate.com/connect",
+  "keywords": [
+    "telegram",
+    "messages",
+    "chats",
+    "assistant"
+  ],
   "repository": "https://github.com/saplq/chatmate-plugin",
-  "license": "MIT",
-  "keywords": ["chatmate", "telegram", "memory", "mcp", "reports"],
-  "skills": "./skills/",
-  "mcpServers": "./.mcp.json"
+  "license": "MIT"
 }
