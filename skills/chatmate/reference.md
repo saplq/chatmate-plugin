@@ -86,3 +86,12 @@
 - Up to 50 items and 64 KB per call; `next_cursor` continues the same query, `truncated: true` means there is more.
 - History keeps the latest 60 days, starting at connection. Without dates, reads cover that available history in bounded pages. A wider date range is clipped to the current 60-day window.
 - To finish a long message call `get_messages` with `message_id` and `text_cursor`.
+
+## Conversation and participant retrieval (0.8)
+
+- `get_messages.thread_id` filters one forum topic and requires `chat_id`. It combines with author/date filters and pagination; omit `person_id` to read both sides. Message text continuation cannot include topic or page filters.
+- `get_message_context` returns a bounded window, the accessible explicit reply parent, and album members. Neighbours/album members stay in the anchor topic. Expand a truncated window with paged `get_messages` in the same chat/topic/period; ordinary groups have no reliable automatic episode boundaries.
+- `reply_preview.person_id` comes only from an accessible stored parent, never an external reply snapshot. `mentions` is at most 64 `{person_id, location, offset, length}` entries for complete text/caption bodies. Offsets count UTF-16 units, as Telegram does. Raw Telegram IDs are not exposed; ambiguous usernames have no resolved link.
+- `list_people` matches current and earlier names/usernames from retained accessible messages and reactions, and returns the latest accessible profile. Revoked/deleted/expired sources cannot supply an alias.
+- `search_messages.mode` defaults to `exact`. `expanded` requires explicit `person_id` or `chat_ids`, `from`, `to`, and 1–8 `query_variants` (complete queries, each at most 256 characters). Your AI supplies word forms; ChatMate runs the same lexical/literal search for each. Duplicate variants are collapsed. An empty variant or no distinct alternative is invalid.
+- Original-query hits precede every expanded-only hit, including later pages. `expanded: true` marks an alternative-query hit; `matched_query` is its winning query and drives `snippet`/`matched_in`. Keep mode, variants, scope and period unchanged with the cursor. Matches are candidate evidence, not proof of an active agreement.
