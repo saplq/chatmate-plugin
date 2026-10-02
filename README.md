@@ -12,6 +12,8 @@ Add the connector in one click: [Add ChatMate to Claude](https://claude.ai/custo
 
 So that reading never asks for approval: **Customize → Connectors → ChatMate → Tool permissions → Read-only tools → Always allow**.
 
+For the full ChatMate skill, download [chatmate-skill.zip](https://www.getchatmate.com/chatmate-skill.zip) and upload it in **Settings → Capabilities → Skills**. Upload it again when a new version comes out; the connector itself always uses the current ChatMate server.
+
 ## Claude Code
 
 ```
@@ -20,6 +22,13 @@ claude plugin install chatmate@chatmate
 ```
 
 The plugin approves ChatMate reads and messages to your own bot chat by itself. Sending to other chats (`send_to_chat`) still asks.
+
+To get new versions automatically, open `/plugin` → **Marketplaces** → **chatmate** → **Enable auto-update**. Otherwise update by hand:
+
+```
+claude plugin marketplace update chatmate
+claude plugin update chatmate@chatmate
+```
 
 ## Codex
 
@@ -30,6 +39,10 @@ codex mcp login chatmate
 ```
 
 The first connection opens the same Telegram login.
+
+## ChatGPT
+
+Open the ChatMate app link from your ChatMate bot. ChatGPT keeps the tool descriptions it saw when you connected: after a ChatMate update, open the app in **Settings → Apps → ChatMate** and click **Refresh**.
 
 ## Other MCP clients
 
