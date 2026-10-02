@@ -17,12 +17,13 @@
 | `author.display_name`, `author.username` | Who wrote it. `author.is_owner` is true for the user |
 | `author.person_id` | The same person in every connected chat of this user (an opaque id, not a Telegram id). Use it with `get_messages` and `search_messages` |
 | `text`, `caption` | What was written; a caption belongs to media. `text_truncated` with `text_cursor` means there is more |
+| `links`, `links_truncated` | Complete HTTP(S) destinations from explicit text/caption links. Query parameters are preserved. More than 64 links or the link budget is marked partial; the backend never opens these URLs |
 | `reply_preview` | The message this one answers: `author`, `is_owner`, `excerpt`, `quote` (the part the person selected), `media`, `from_other_chat` |
 | `reply_to_id`, `reply_missing` | The stored original, or `reply_missing: true` when it is not stored (older than ChatMate or not available) |
 | `forwarded_from` | Original sender name and date of a forwarded message |
 | `service` | Chat event instead of a message, see below |
 | `shared` | `poll` (question, options), `location`, `venue` (title, address), `contact` (name, phone), `dice`, `checklist` (tasks with `done`) |
-| `attachments` | `type` (photo, video, animation, sticker, voice, video_note, audio, document, unsupported), `filename`, `mime`, `size` in bytes, `duration` in seconds, `width`, `height`, sticker `emoji`, audio `title`. Content is not available |
+| `attachments` | `type` (photo, video, animation, sticker, voice, video_note, audio, document, unsupported), `filename`, `mime`, `size` in bytes, `duration` in seconds, `width`, `height`, sticker `emoji`, audio `title`. Use its `id` and `version` with `get_attachment` when content is needed |
 | `automated` | Away message or a reply sent by a business bot |
 | `edited_at`, `edit_history` | When the text was last edited, and up to 5 earlier versions (`text`, `caption`, `edited_at` of that version, `replaced_at`), oldest first. Long versions are cut at 1000 characters with `text_truncated` |
 | `reactions` | Per emoji (`emoji`, `custom_emoji_id` for a custom one, or `paid`): `count` and up to 10 people in `by` (`person_id`, `display_name`, `is_owner`). Anonymous reactions have a count only. Groups only, and only while the bot is an administrator |
@@ -45,7 +46,7 @@
   - `source_revoked`, `consent_revoked`, `privacy_revoke`, `access_closed`: the user turned off the chat, storage or access;
   - `business_reconnect`, `generation_closed`: the bot or Chat Automation was reconnected;
   - `raw_expired`, `retries_exhausted`: ChatMate could not process the message in time.
-- `unprocessed_media_count`: photos, videos, voice messages and files whose content was not read.
+- `unprocessed_media_count`: photos, videos, voice messages and files without retained derivative text. On-demand reads are not cached and do not decrease this count.
 - Deleted private-chat messages stay in place as `deleted: true`. Telegram does not tell bots about deletions in groups, so a deleted group message keeps its last text.
 - Reactions arrive only from groups where the bot is an administrator; private (Business) chats have none.
 
@@ -66,6 +67,19 @@
 | `CURSOR_INVALID`, `CURSOR_EXPIRED` | A page cursor no longer matches | Repeat the request without the cursor |
 | `INVALID_ARGUMENT` | Wrong input, for example an end date before the start date | Fix the input |
 | `TEMPORARY_UNAVAILABLE` | ChatMate could not answer | Retry once, then tell the user |
+
+## Attachment errors and limits
+
+- `MEDIA_UNAVAILABLE`: Telegram did not provide the file, or decoding failed; ask for a resend or a link.
+- `MEDIA_TOO_LARGE`: download exceeds 18 MiB (below the hosted Telegram API limit); ask for a smaller copy/link.
+- `ORIGINAL_TOO_LARGE`: binary original exceeds the 2 MiB MCP result budget; use `auto` for supported pages/text.
+- `MEDIA_TOO_COMPLEX`: file exceeds parser, pixel, page or time limits; ask for a smaller/simpler document.
+- `UNSUPPORTED_MEDIA`: no reader for this format. `DOCUMENT_LOCKED`: encrypted/password-protected copy.
+- `get_attachment`: `attachment_id`, `version`, optional `representation` (`auto`, `text`, `image`, `original`), PDF `page` (1–2000), text `offset`. Follow returned `next_offset` before `next_page`; never assume one call reads a whole document.
+- JPEG/PNG/WebP are returned as JPEG at up to 2400 pixels on the long edge and 2 MiB; `image_scaled` indicates reduced dimensions. Each PDF `auto` page includes its text and visual rendition. PDF `text` explicitly omits visuals.
+- DOCX paragraphs/tables/headers/notes and XLSX sheet names/cell addresses/stored values are read; embedded pictures/charts/layout are excluded. CSV/TXT/TSV/MD/JSON must use UTF-8 or BOM-marked UTF-16. Text is delivered in parts of at most 12000 UTF-16 units.
+- Office ZIP: at most 2048 entries, 8 MiB per selected XML part, 24 MiB total; external relationships/DTDs/macros are not executed. Parsing is isolated and stops after 20 seconds.
+- A file is accessible only while the source message is retained and this connection has current access. Telegram IDs belong to the original bot. Replacing/deleting the bot can make a file unavailable; no independent archive is promised.
 
 ## Limits and paging
 

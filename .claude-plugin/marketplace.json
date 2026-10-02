@@ -11,7 +11,7 @@
     {
       "name": "chatmate",
       "source": "./",
-      "description": "Read the Telegram chats connected to your personal ChatMate bot, reply to you in that bot and ask for your approval before consequential actions.",
+      "description": "Read the Telegram chats connected to your personal ChatMate bot, get answers in that bot and confirm steps there before they happen.",
       "category": "productivity",
       "homepage": "https://www.getchatmate.com/connect"
     }
