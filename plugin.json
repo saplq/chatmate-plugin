@@ -1,0 +1,99 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "chatmate",
+  "version": "0.9.0",
+  "description": "Connects your AI to your Telegram through your personal ChatMate bot: read the chats you connected, give tasks in the bot, and get answers, drafts and results back in Telegram.",
+  "author": {
+    "name": "ChatMate",
+    "url": "https://www.getchatmate.com"
+  },
+  "homepage": "https://www.getchatmate.com/connect",
+  "repository": "https://github.com/saplq/chatmate-plugin",
+  "license": "MIT",
+  "keywords": [
+    "telegram",
+    "messages",
+    "chats"
+  ],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "ChatMate",
+        "shortDescription": "Ask about your Telegram chats",
+        "longDescription": "ChatMate brings the Telegram chats you choose into this conversation. Create your personal ChatMate bot in @chatmate_aibot, connect private chats through Telegram's Chat Automation or add the bot to a group, sign in with Telegram and allow access once.\n\nAsk what people wrote recently, find the message where you agreed on a price, or check whether someone sent a contract. Answers name the chat and the date, and ChatMate shows which period it has messages for.\n\nWhen you ask, ChatMate can send you a summary or a reminder in your private chat with your bot, or ask you to confirm a step there with Confirm and Cancel buttons. Sending to a connected chat requires you to turn it on in your bot and approve the exact recipient and text before each send.\n\nHistory starts when a chat is connected: earlier messages, secret chats and channels are not available. ChatMate keeps the latest 60 days of messages from connected chats. On the My data page at getchatmate.com you can turn off a chat, disconnect this app, download or delete your data at any time.",
+        "developerName": "ChatMate",
+        "category": "Productivity",
+        "capabilities": [
+          "Read",
+          "Write"
+        ],
+        "websiteURL": "https://www.getchatmate.com",
+        "supportURL": "https://www.getchatmate.com/en/support",
+        "privacyPolicyURL": "https://www.getchatmate.com/en/privacy",
+        "termsOfServiceURL": "https://www.getchatmate.com/en/terms",
+        "defaultPrompt": [
+          "What did people write to me on Telegram over the last few days?",
+          "Find the Telegram message where we agreed on the price.",
+          "Send me a summary of my Telegram chats in my ChatMate bot."
+        ],
+        "brandColor": "#111111",
+        "composerIcon": "./assets/icon.png",
+        "logo": "./assets/logo.png"
+      },
+      "review": {
+        "commerce": false,
+        "test_cases": {
+          "positive": [
+            {
+              "description": "Summarize recent messages across the connected chats.",
+              "prompt": "What did people write to me on Telegram over the last few days? Group it by chat.",
+              "tools_triggered": "get_connection_status, list_chats, get_messages",
+              "expected_behavior": "Reads the connected chats (Anna Kovalenko, Mark Weber, Bakery website team, My ChatMate) and summarizes each one with names and dates: for example, Anna asks for cake gallery mockups by Friday and Mark sent invoice 2026-114 for 1,200 EUR. Nothing is invented."
+            },
+            {
+              "description": "Find an agreement and read it in context.",
+              "prompt": "Find the Telegram message where Anna and I agreed on the price for her website.",
+              "tools_triggered": "search_messages, get_message_context",
+              "expected_behavior": "Finds Anna Kovalenko's message \"Deal, the price is 2,100 EUR without the blog\" from about two days ago, quotes it with the date and explains from the surrounding messages that the first quote was 2,400 EUR and the blog page was dropped."
+            },
+            {
+              "description": "Check whether a document was sent.",
+              "prompt": "Did Mark send the signed contract? When?",
+              "tools_triggered": "search_messages",
+              "expected_behavior": "Finds Mark Weber's message that he signed the contract for the bakery project and emailed it, gives its date (about two days ago) and says the file itself was sent by email, not in the chat."
+            },
+            {
+              "description": "Send the user a summary in their own ChatMate bot chat.",
+              "prompt": "Send me a short summary of what my clients asked for this week to my ChatMate bot.",
+              "tools_triggered": "list_chats, get_messages, send_message",
+              "expected_behavior": "Reads the client chats, then sends one short summary to the user's private chat with the bot (the My ChatMate chat) and reports status sent. In the review account the message appears in the My ChatMate chat and is not delivered to Telegram."
+            },
+            {
+              "description": "Ask the user to confirm a step in their ChatMate bot and report the status honestly.",
+              "prompt": "Before I pay Mark's invoice, ask me in my ChatMate bot to confirm paying 1,200 EUR, then tell me the status.",
+              "tools_triggered": "request_approval, get_approval_status",
+              "expected_behavior": "Sends one confirmation request for paying invoice 2026-114 (1,200 EUR to Mark Weber) and reports that it is awaiting the user's confirmation. It does not treat awaiting_owner as approval and does not claim anything was paid. In the review account the request stays awaiting_owner, because the Confirm button lives in Telegram."
+            }
+          ],
+          "negative": [
+            {
+              "description": "Sending to other chats is off in the review account, so send_to_chat returns SEND_DISABLED. The assistant should say the user can turn sending on in their ChatMate bot and offer a draft meanwhile; it must not claim the message was sent.",
+              "prompt": "Text Anna on Telegram that the new price is 3,000 EUR."
+            },
+            {
+              "description": "ChatMate has no tool to delete or edit Telegram messages.",
+              "prompt": "Delete Mark's messages from my Telegram chats."
+            },
+            {
+              "description": "The request is unrelated to the user's Telegram chats, so ChatMate should not be called.",
+              "prompt": "What's the weather in Berlin tomorrow?"
+            }
+          ]
+        }
+      },
+      "publication": {
+        "release_notes": "ChatMate 0.9: one execution claims each owner task, native Telegram answer previews and a durable final reply, scoped poll/checklist/pin actions, richer reply and message context, and guided ChatGPT Events/Claude Routine setup. Default answer updates use explicit MCP calls. Optional Claude Code display hooks require a dedicated Telegram-only environment; automatic triggers require separate provider setup and live verification. ChatMate 0.8: read both sides of conversations, follow explicit replies and mentions, find people by earlier names, and explicitly expand word forms within selected people/chats and dates. No backend AI. ChatMate 0.7: read Telegram photos and PDF/DOCX/XLSX/text attachments on demand; PDF pages include text and images with explicit continuation, and the original file is available as an MCP resource when it fits. Full text/caption URLs include hidden links. No permanent file archive or backend AI provider. ChatMate 0.6: the same person is recognized across private chats and groups (list_people, person_id), group reactions, earlier versions of edited messages, deleted private-chat messages shown without content, forum topic names. ChatMate 0.5: the skill treats ChatMate as a bridge to Telegram: tasks from the user's bot, results of other tools delivered back to Telegram, drafts in the user's own style, clear errors. ChatMate 0.4.1: each message now carries its chat title and author, what it replies to, where it was forwarded from, shared polls, places and contacts, attachment types and chat events such as joins. ChatMate 0.4: read the Telegram chats connected to your ChatMate bot (list chats, read and search messages, open a message in context), and at your request send yourself a message or a confirmation request in your own bot chat. Sign-in is OAuth 2.1 with PKCE and dynamic client registration; owners sign in with Telegram. The review account signs in with a login and password into a separate workspace with made-up chats. Messages and confirmation requests sent from it are recorded in its sample bot chat and are not delivered to Telegram."
+      }
+    }
+  }
+}

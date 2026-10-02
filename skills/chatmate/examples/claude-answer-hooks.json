@@ -1,0 +1,45 @@
+{
+  "description": "Optional Claude Code hooks for a dedicated Telegram-only environment. Every assistant display delta in that environment reaches ChatMate; the server forwards only bound task answers to Telegram. Do not enable in general AI chats.",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "^mcp__.*[Cc]hat_?[Mm]ate.*__begin_answer$",
+        "hooks": [
+          {
+            "type": "mcp_tool",
+            "server": "plugin:chatmate:chatmate",
+            "tool": "bind_answer",
+            "input": {
+              "message_id": "${tool_input.message_id}",
+              "execution_id": "${tool_input.execution_id}",
+              "session_id": "${session_id}",
+              "prompt_id": "${prompt_id}"
+            },
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "MessageDisplay": [
+      {
+        "hooks": [
+          {
+            "type": "mcp_tool",
+            "server": "plugin:chatmate:chatmate",
+            "tool": "stream_answer",
+            "input": {
+              "session_id": "${session_id}",
+              "prompt_id": "${prompt_id}",
+              "turn_id": "${turn_id}",
+              "message_id": "${message_id}",
+              "index": "${index}",
+              "final": "${final}",
+              "delta": "${delta}"
+            },
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}

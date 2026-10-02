@@ -17,12 +17,13 @@
 | `author.display_name`, `author.username` | Who wrote it. `author.is_owner` is true for the user |
 | `author.person_id` | The same person in every connected chat of this user (an opaque id, not a Telegram id). Use it with `get_messages` and `search_messages` |
 | `text`, `caption` | What was written; a caption belongs to media. `text_truncated` with `text_cursor` means there is more |
-| `links`, `links_truncated` | Complete HTTP(S) destinations from explicit text/caption links. Query parameters are preserved. More than 64 links or the link budget is marked partial; the backend never opens these URLs |
-| `reply_preview` | The message this one answers: `author`, `is_owner`, `excerpt`, `quote` (the part the person selected), `media`, `from_other_chat` |
+| `links`, `links_truncated` | Complete HTTP(S) destinations with `location` (`text`, `caption`, `preview`, `rich`); query parameters are preserved. More than 64 links or the 8192-byte link budget is marked partial; the backend never opens these URLs |
+| `reply_preview` | The message this one answers: `author`, `is_owner`, `excerpt`, `quote` (the selected part), `quote_manual`, `quote_position`, `origin_type`, `media`, `from_other_chat` |
 | `reply_to_id`, `reply_missing` | The stored original, or `reply_missing: true` when it is not stored (older than ChatMate or not available) |
-| `forwarded_from` | Original sender name and date of a forwarded message |
+| `forwarded_from` | Original sender name, date and `origin_type` of a forwarded message; hidden names do not prove a person's identity |
 | `service` | Chat event instead of a message, see below |
-| `shared` | `poll` (question, options), `location`, `venue` (title, address), `contact` (name, phone), `dice`, `checklist` (tasks with `done`) |
+| `shared` | `poll` (question/options and available received counts/anonymity/time), `location`, `venue` (title, address), `contact` (name, phone), `dice`, `checklist` (task IDs, text, done and available completion time/actor) |
+| `rich` | Simple `tables`; `partial` and `reasons` flag omitted/limited rich content. Readable text is in `text`; rich links are in `links` |
 | `attachments` | `type` (photo, video, animation, sticker, voice, video_note, audio, document, unsupported), `filename`, `mime`, `size` in bytes, `duration` in seconds, `width`, `height`, sticker `emoji`, audio `title`. Use its `id` and `version` with `get_attachment` when content is needed |
 | `automated` | Away message or a reply sent by a business bot |
 | `edited_at`, `edit_history` | When the text was last edited, and up to 5 earlier versions (`text`, `caption`, `edited_at` of that version, `replaced_at`), oldest first. Long versions are cut at 1000 characters with `text_truncated` |
@@ -53,8 +54,32 @@
 ## Sending and statuses
 
 - `send_message` goes only to the user's chat with their bot. `send_to_chat` goes to one business chat (as the user, through Chat Automation) or one group (as the user's ChatMate bot).
-- Text is plain, up to 4000 characters per call. `reply_to_message_id` is a Telegram message number in that chat, not a ChatMate `id`; you get one only from a bot event (`data.message_id`), otherwise leave it out.
+- `send_message`, `send_to_chat`, `request_approval` and `telegram_action` accept optional paired `answer_id` and `execution_id` UUIDs. Include both on every action for a claimed Telegram task, using its returned answer ID and original execution ID. The server checks the current grant, ownership and task state before accepting or starting the action; Stop blocks queued task actions that have not started. Standalone actions omit both. One without the other is invalid; never omit the pair to bypass Stop. An action already started or sent cannot be undone by stopping the task.
+- Text is plain, up to 4000 characters per call. `reply_to_message_id` is a Telegram message number in that chat, not a ChatMate UUID. An owner event's `data.message_id` is the canonical UUID for `begin_answer`/`get_message_context`; never pass it as a Telegram reply number. For task answers use `finish_answer`, which resolves the original reply on the server; otherwise leave the reply number out unless explicitly provided by the tool.
 - Statuses: `pending` (queued), `sent`, `awaiting_owner` (a confirmation request waits for the user), `approved`, `declined`, `failed` (Telegram refused, nothing was sent), `unknown` (Telegram did not answer: do not send again, tell the user to check the chat).
+
+## Owner task answers (0.9)
+
+- `begin_answer`: `{message_id, execution_id}`. Both are UUIDs; the message must be the owner's accessible private bot task. Keep the execution UUID on retries. Competing execution returns `ANSWER_CLAIMED`; stopped/unavailable execution must not continue.
+- The result includes `answer_id`, `execution_id`, `status` (`active`, `finishing`, `finished`, `stopped`), `sequence`, `expires_at` and nullable `action`. Only `active` permits new preview updates. Delivery lives in `action.status`; `finished` alone does not prove Telegram delivery.
+- `update_answer`: `{answer_id, execution_id, sequence, text?, phase?}`. Provide text or phase. Sequence is a non-negative increasing integer; old updates cannot roll the preview back. Text is accumulated, at most 4000 characters. Phases are `thinking`, `reading_conversation`, `checking_document`, `preparing_answer`.
+- `finish_answer`: `{answer_id, execution_id, text, idempotency_key}`. Final text is 1–4000 characters. This sends one durable reply to the original owner message; preserve the key and inspect `answer_status` (`{answer_id}`). Never silently cut a longer result or repeat a finish through another send tool; give a short complete answer plus a supporting document/link when needed.
+- The optional dedicated-environment hook example uses `bind_answer` (`message_id`, `execution_id`, provider `session_id`, `prompt_id`) and `stream_answer` (same session/prompt, display `turn_id`, assistant `message_id`, `index`, `final`, `delta`). Default installation uses explicit `update_answer` calls and does not forward display text. With the example enabled, even unbound deltas reach ChatMate; a missing binding ignores them for Telegram delivery, and `final` does not call finish. See [setup.md](setup.md) for the opt-in scope and client limits.
+
+## Typed Telegram actions (0.9)
+
+`telegram_action` accepts `{chat_id, idempotency_key, payload, answer_id?, execution_id?}`. Include the two task IDs together for a claimed task, as described above. `chat_id` is the connected ChatMate source UUID from `list_chats`; Telegram destinations are resolved by the server. Sending must be enabled and the user must approve the exact action/content/recipient. Read delivery with `get_approval_status` (`{action_id}`). Keep the idempotency key; after `unknown` never repeat it through a new key.
+
+| `payload.operation` | Other payload fields |
+|---|---|
+| `send_poll` | `question` (1–300 chars), `options` (1–12 strings, 1–100 chars), optional `is_anonymous`, `allows_multiple_answers` |
+| `stop_poll` | `action_id` of this bot's registered create-poll action |
+| `send_checklist` | `checklist` with `title` (1–255 chars), 1–30 tasks (`id` 1–999999999, unique; `text` 1–100 chars); optional `others_can_add_tasks`, `others_can_mark_tasks_as_done` |
+| `edit_checklist` | Original registered `action_id` and replacement `checklist` |
+| `pin` | Accessible canonical `message_id`, optional `disable_notification` |
+| `unpin` | Accessible canonical `message_id` |
+
+Native checklist create/edit requires a Business connection; ordinary child/group checklist creation is unsupported. Poll and pin actions depend on source/Telegram permissions and can be rejected. No generic Bot API payload, editPoll, checklist done toggle, unpin-all or arbitrary message editing.
 
 ## Errors
 
@@ -67,6 +92,7 @@
 | `CURSOR_INVALID`, `CURSOR_EXPIRED` | A page cursor no longer matches | Repeat the request without the cursor |
 | `INVALID_ARGUMENT` | Wrong input, for example an end date before the start date | Fix the input |
 | `TEMPORARY_UNAVAILABLE` | ChatMate could not answer | Retry once, then tell the user |
+| `ANSWER_CLAIMED`, `ANSWER_STOPPED` | Another execution owns the task, or it was stopped | Stop work and new delivery; do not use a different send tool to bypass it |
 
 ## Attachment errors and limits
 
@@ -95,3 +121,13 @@
 - `list_people` matches current and earlier names/usernames from retained accessible messages and reactions, and returns the latest accessible profile. Revoked/deleted/expired sources cannot supply an alias.
 - `search_messages.mode` defaults to `exact`. `expanded` requires explicit `person_id` or `chat_ids`, `from`, `to`, and 1–8 `query_variants` (complete queries, each at most 256 characters). Your AI supplies word forms; ChatMate runs the same lexical/literal search for each. Duplicate variants are collapsed. An empty variant or no distinct alternative is invalid.
 - Original-query hits precede every expanded-only hit, including later pages. `expanded: true` marks an alternative-query hit; `matched_query` is its winning query and drives `snippet`/`matched_in`. Keep mode, variants, scope and period unchanged with the cursor. Matches are candidate evidence, not proof of an active agreement.
+
+## Rich conversation context (0.9, retrieval contract 5)
+
+- Existing contracts 1–4 retain their previous shape. In the current tool output, `reply_preview.quote_manual` is the supplied manual-quote flag and `quote_position` is Telegram's approximate UTF-16 position in the original. External/forward `origin_type` distinguishes `user`, `hidden_user`, `chat`, `channel` or a future type; a display name alone is not a person ID.
+- Reply chains use existing `reply_to_id` plus repeated `get_message_context`, at most five accessible parents. Keep visited IDs and explicitly report a missing link, cycle or depth limit. There is no recursive `reply_chain` response field. Normal forum context remains within the anchor topic; an explicit stored parent can explain the reply.
+- Pin/checklist service events can carry accessible `target_message_id` (canonical UUID), or `target_missing`. Read the target with `get_message_context`; a missing target reveals no source or content. `auto_delete_seconds`, including zero, is a received timer event rather than the current live setting.
+- `shared.checklist.tasks` entries retain `{id?, text, done, completed_at?, completed_by?}`. An actor is `{type: "user" | "chat", display_name?, person_id?}`; absent fields are unknown. Service events add `done_task_ids`, `undone_task_ids`, `added_tasks` and optional `partial`. IDs refer to checklist items, not messages.
+- `shared.poll` can include `anonymous`, `total_voter_count`, `option_voter_counts` (aligned with options; null is unknown), `snapshot_at` and `partial`. This is Telegram's received snapshot, not a new query of current voting or proof of every voter's identity.
+- An exact HTTP(S) preview URL has `links.location: "preview"`; it can differ from every text/caption link. Rich links have `location: "rich"`. The same 64-link/8192-byte budget applies; no URL fetch happens on the backend.
+- Incoming rich text is searchable `text` with no inherited Telegram entity offsets. `rich.tables` holds up to four simple tables, each up to eight rows/eight cells and 120 characters per cell. `partial`/`reasons` (`unknown_block`, `malformed`, `limit`, `complex_table`) identify missing representation. Do not claim full formatting/content when partial.

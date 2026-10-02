@@ -1,53 +1,51 @@
 # ChatMate plugin
 
-ChatMate is a bridge between your AI and your Telegram. Your personal ChatMate bot keeps new messages from the chats you connect; Claude reads them, takes tasks you write to the bot, and sends answers, drafts and results of other tools back to Telegram.
+Connect the Telegram chats you choose to your own AI. ChatMate supplies the messages and tools; your AI handles the work and can return answers to your personal ChatMate bot.
 
-## Before you start
+## Start in your bot
 
-Open [@chatmate_aibot](https://t.me/chatmate_aibot?start=setup), create your bot and connect your chats there. History starts when a chat is connected; the latest 60 days are kept.
+1. Open [@chatmate_aibot](https://t.me/chatmate_aibot?start=setup), create your personal bot and connect your chats.
+2. Choose ChatGPT or Claude in that bot. It sends the complete setup prompt in a copyable code block, with options for ordinary Claude, local Claude Code and cloud Routines.
+3. Open the selected AI and send the prompt yourself. ChatGPT and ordinary Claude need you to paste it; the Claude Routine option opens a composer draft without sending it.
+4. Let the AI guide installation and connection. Confirm the installation source and scope, then complete Telegram sign-in and **Allow** yourself. Never paste credentials or tokens into an AI conversation. Verify `get_connection_status`, `list_chats` and one owner task before relying on the connection.
 
-## Claude (web, desktop, mobile)
+Full prompts and manual connection instructions are also available at [getchatmate.com/connect](https://www.getchatmate.com/connect).
 
-Add the connector in one click: [Add ChatMate to Claude](https://claude.ai/customize/connectors?modal=add-custom-connector&connectorName=ChatMate&connectorUrl=https%3A%2F%2Fwww.getchatmate.com%2Fapi%2Fconnector%2Fmcp). Click **Add**, then **Connect**, log in with Telegram and click **Allow**.
+## Choose an execution surface
 
-So that reading never asks for approval: **Customize → Connectors → ChatMate → Tool permissions → Read-only tools → Always allow**.
+- **ChatGPT Work:** web Work or desktop Work with Cloud can subscribe through MCP Events when the surface supports them. Monitoring starts only after subscription succeeds. Ordinary chats and clients without Events support manual requests.
+- **Claude web, desktop or mobile:** connect the account connector to read chats and make manual requests. OAuth alone does not start tasks when a Telegram message arrives.
+- **Local Claude Code:** install this plugin and authenticate its MCP connection. This connection is separate from your Claude web account and a cloud Routine environment.
+- **Claude cloud Routine:** choose a repository, environment and required account connectors. This release has no Routine trigger adapter or token setup form. Use **Run now** manually; automatic Telegram triggering remains incomplete. Supply the canonical owner message UUID as task context before claiming it.
 
-For the full ChatMate skill, download [chatmate-skill.zip](https://www.getchatmate.com/chatmate-skill.zip) and upload it in **Settings → Capabilities → Skills**. Upload it again when a new version comes out; the connector itself always uses the current ChatMate server.
+Use one active executor for Telegram tasks. Connecting two AIs does not configure automatic fallback.
 
-## Claude Code
+## Claude Code installation
 
-```
-claude plugin marketplace add saplq/chatmate-plugin
-claude plugin install chatmate@chatmate
-```
+In Claude Code 2.1.275 or later:
 
-The plugin approves ChatMate reads and messages to your own bot chat by itself. Sending to other chats (`send_to_chat`) still asks.
-
-To get new versions automatically, open `/plugin` → **Marketplaces** → **chatmate** → **Enable auto-update**. Otherwise update by hand:
-
-```
-claude plugin marketplace update chatmate
-claude plugin update chatmate@chatmate
+```text
+/plugin install chatmate --marketplace saplq/chatmate-plugin
 ```
 
-## Codex
+Confirm the source and installation scope, then reload plugins or start a new session. Open `/mcp` and authenticate ChatMate; complete the Telegram login yourself.
 
+For Codex, install this repository through its plugin marketplace and authenticate the ChatMate MCP connection. The repository retains its Codex compatibility manifest and marketplace.
+
+## Manual connector fallback
+
+Add an OAuth MCP connector named **ChatMate** with this server URL:
+
+```text
+https://www.getchatmate.com/api/connector/mcp
 ```
-codex plugin marketplace add saplq/chatmate-plugin
-codex plugin add chatmate@chatmate
-codex mcp login chatmate
-```
 
-The first connection opens the same Telegram login.
+Complete Telegram sign-in and **Allow**. The connector provides tools; use the setup prompt to configure the execution surface separately.
 
-## ChatGPT
+## Answer updates and optional hooks
 
-Open the ChatMate app link from your ChatMate bot. ChatGPT keeps the tool descriptions it saw when you connected: after a ChatMate update, open the app in **Settings → Apps → ChatMate** and click **Refresh**.
+Use explicit `update_answer` calls by default. The packaged [Claude Code display-hook example](skills/chatmate/examples/claude-answer-hooks.json) is disabled. Enable it only after explicitly choosing a dedicated Telegram-only project/environment; never install it globally or in a general AI-chat environment. It forwards every assistant display delta from that environment, including unbound text.
 
-## Other MCP clients
+## Your data
 
-Server: `https://www.getchatmate.com/api/connector/mcp` (OAuth 2.1 with PKCE).
-
-## Privacy
-
-The AI sees only chats connected to your bot. Turn off a chat, disconnect an AI, export or delete your data at [getchatmate.com/data-controls](https://www.getchatmate.com/data-controls). Privacy policy: [getchatmate.com/en/privacy](https://www.getchatmate.com/en/privacy).
+History starts when a chat is connected; ChatMate keeps its latest 60 days. Earlier messages, Secret Chats and channels are unavailable. Manage connected chats, AI access, export and deletion at [My data](https://www.getchatmate.com/data-controls). Read the [privacy policy](https://www.getchatmate.com/en/privacy).
