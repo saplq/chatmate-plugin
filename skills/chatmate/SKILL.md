@@ -20,6 +20,8 @@ description: Connects the user's AI to their Telegram through their personal Cha
 | Find a topic, name, amount, file or poll | `search_messages` |
 | Read a chat, newest first | `get_messages` |
 | See a found message in its conversation | `get_message_context` |
+| Find a person by name or @username, and the chats they appear in | `list_people` |
+| Read or search what one person wrote across private chats and groups | `get_messages` or `search_messages` with `person_id` |
 | Answer the user in Telegram | `send_message`, only to their bot chat |
 | Ask the user to confirm a step | `request_approval`, then `get_approval_status` |
 | Send to a connected chat: a business chat as the user, a group as their bot | `send_to_chat`, only after the user turned sending on in the bot |
@@ -36,8 +38,13 @@ ChatMate cannot read history from before a chat was connected, secret chats or c
    - `service` is a chat event such as a join, rename or pin. Nobody wrote it.
    - `shared` holds polls, places, contacts, dice and checklists. `attachments` give only type, file name, size and duration: say "Anna sent offer.pdf", never describe what is inside.
    - `automated: true` is an automatic reply, not something the person typed.
+   - `thread_title` names the forum topic of a group message.
+   - `reactions` are emoji with a count and, when Telegram names them, who reacted (`by`). They come only from groups where the bot is an administrator, never from private chats.
+   - `edit_history` holds up to 5 earlier versions of an edited message, oldest first; `text` is the current one.
+   - `deleted: true` marks a message deleted in a private chat: it existed at that time, but its author and text are gone. Say so instead of guessing what it said. Telegram does not report deletions in groups.
 3. Cite the chat title, the author and the date. There are no links to Telegram messages.
-4. Check `coverage`. If the period asked about starts before `observed_from` or overlaps a `known_gaps` entry, say which part is missing instead of guessing. Few or no messages can simply mean a quiet chat or a recent connection.
+4. Follow a person across chats: `author.person_id` is the same person in every connected chat, private or group. For "what did Ivan write to me and in the group", call `list_people` with "Ivan", pick the right person (names can repeat: compare `username` and `chats`), then `get_messages` with that `person_id` and no `chat_id`. The user's own `person_id` has `is_owner: true`. Anonymous chat senders have no human `person_id`; do not join them by name. Names and usernames come only from the chats in the returned scope. Follow `next_cursor` with the same query and chat filters to finish a people list; the cursor also covers entries omitted by the response budget.
+5. History currently has no time limit; use pages to read older stored messages. Check `coverage`. If the period asked about starts before `observed_from` or overlaps a `known_gaps` entry, say which part is missing instead of guessing. Few or no messages can simply mean a quiet chat or a recent connection.
 
 ## Do a task from the user's bot
 

@@ -1,6 +1,6 @@
 {
   "name": "chatmate",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Connects your AI to your Telegram through your personal ChatMate bot: read the chats you connected, give tasks in the bot, and get answers, drafts and results back in Telegram.",
   "author": {
     "name": "ChatMate",
@@ -24,7 +24,7 @@
   "interface": {
     "displayName": "ChatMate",
     "shortDescription": "Your Telegram chats in the conversation",
-    "longDescription": "Connect the Telegram chats of your personal ChatMate bot. Ask what people wrote, find a message or a person, get a reply or an approval request in the bot. New chats you connect in Telegram appear automatically.",
+    "longDescription": "Connect the Telegram chats of your personal ChatMate bot. Follow a person across private chats and groups, see group reactions, earlier edits, deleted private messages without content and forum topic names. Get a reply or an approval request in your bot. New chats you connect in Telegram appear automatically.",
     "developerName": "ChatMate",
     "category": "Productivity",
     "capabilities": [
