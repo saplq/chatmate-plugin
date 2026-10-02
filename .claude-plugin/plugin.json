@@ -1,8 +1,8 @@
 {
   "name": "chatmate",
   "displayName": "ChatMate",
-  "version": "0.3.0",
-  "description": "Read the Telegram chats connected to your personal ChatMate bot, reply to you in that bot and ask for your approval before consequential actions.",
+  "version": "0.5.0",
+  "description": "Connects your AI to your Telegram through your personal ChatMate bot: read the chats you connected, give tasks in the bot, and get answers, drafts and results back in Telegram.",
   "author": {
     "name": "ChatMate",
     "url": "https://www.getchatmate.com"

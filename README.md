@@ -1,6 +1,6 @@
 # ChatMate plugin
 
-ChatMate connects the Telegram chats of your personal ChatMate bot to Claude. Ask what people wrote, find a message or a person, and get a reply or an approval request in your bot.
+ChatMate is a bridge between your AI and your Telegram. Your personal ChatMate bot keeps new messages from the chats you connect; Claude reads them, takes tasks you write to the bot, and sends answers, drafts and results of other tools back to Telegram.
 
 ## Before you start
 
@@ -10,12 +10,16 @@ Open [@chatmate_aibot](https://t.me/chatmate_aibot?start=setup), create your bot
 
 Add the connector in one click: [Add ChatMate to Claude](https://claude.ai/customize/connectors?modal=add-custom-connector&connectorName=ChatMate&connectorUrl=https%3A%2F%2Fwww.getchatmate.com%2Fapi%2Fconnector%2Fmcp). Click **Add**, then **Connect**, log in with Telegram and click **Allow**.
 
+So that reading never asks for approval: **Customize → Connectors → ChatMate → Tool permissions → Read-only tools → Always allow**.
+
 ## Claude Code
 
 ```
 claude plugin marketplace add saplq/chatmate-plugin
 claude plugin install chatmate@chatmate
 ```
+
+The plugin approves ChatMate reads and messages to your own bot chat by itself. Sending to other chats (`send_to_chat`) still asks.
 
 ## Codex
 
