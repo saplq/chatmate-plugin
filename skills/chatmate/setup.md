@@ -4,16 +4,16 @@ The plugin includes the `chatmate` skill and the remote MCP server at `https://w
 
 ## Start in the private bot chat
 
-Choose your AI in your private ChatMate child bot. The primary choices are `chatgpt` (ChatGPT Work) and `claude_routine` (Claude tasks from Telegram); `claude_web` (ordinary chat) and `claude_code` (local Code) are advanced alternatives. The bot sends the full setup prompt in a code block and an Open button. For ChatGPT Work, install ChatMate and choose Setup first; copying the full prompt is a fallback when native Setup is unavailable. For Claude, open your AI and send the prompt to start the guide. The AI then guides installation and OAuth if ChatMate is not available yet; the owner confirms the installation and Telegram sign-in/Allow themselves. Verify access before configuring automatic tasks, then return to the bot's Done, check button.
+Choose your AI in your private ChatMate child bot. The primary choices are `chatgpt` (ChatGPT Work) and `claude_routine` (Claude tasks from Telegram); `claude_web` (ordinary chat) and `claude_code` (local Code) are advanced alternatives. The bot sends one short setup request with Copy/Open controls. It invokes `chatmate-setup`; if a native Setup button is available it runs the same skill. Start by checking status, reuse working OAuth and a ready executor. The full setup prompt is an advanced fallback, not an additional required step. The AI then guides installation and OAuth if ChatMate is not available yet; the owner confirms the installation and Telegram sign-in/Allow themselves. Verify access before configuring automatic tasks, then return to the bot's Done, check button.
 
 | Surface | How to start | Execution after setup |
 | --- | --- | --- |
-| `chatgpt` | Install ChatMate in Work and choose Setup. If unavailable, paste and send the full fallback prompt in Work. A supported draft-prefill URL for ordinary ChatGPT web is not documented. | Work web or desktop Work with Cloud can subscribe to MCP Events; verify one real owner task. |
-| `claude_routine` | The HTTPS `https://claude.ai/code/new?q=...` button opens a Claude Code composer with the full prompt; the owner presses Send. It requires Code access and does not create a Routine itself. | Configure an account connector and cloud Routine. Save the API trigger through the protected ChatMate form and verify one owner task. |
+| `chatgpt` | Send the short setup request in Work on the web, or choose Setup if available. The setup checks actual Events capability. A supported draft-prefill URL for ordinary ChatGPT web is not documented. | Work web or desktop Work with Cloud can subscribe to MCP Events; verify one real owner task. |
+| `claude_routine` | The HTTPS `https://claude.ai/code/new?q=...` button opens a Claude Code composer with the short setup request; the owner presses Send. It requires Code access and does not create a Routine itself. | Configure an account connector and cloud Routine. Save the API trigger through the protected ChatMate form and verify one owner task. |
 | `claude_web` | Open ordinary Claude, paste and send the full prompt. | Manual retrieval and requests; ordinary chat does not continuously monitor Telegram. |
 | `claude_code` | Paste and send the installation prompt in Claude Code on your computer; the bot's guide button explains this path. | Local MCP access; installation does not configure the web account or a cloud trigger. |
 
-The [connect page](https://www.getchatmate.com/connect) carries the same prompts, Copy/Open controls and manual connection options as a fallback. Visiting it before or after connecting is not required. Telegram's native CopyTextButton is limited to 256 characters, so it cannot carry the full setup prompt. No Open button sends the prompt automatically, and successful OAuth alone does not prove automatic execution.
+The [connect page](https://www.getchatmate.com/connect) carries the same prompts, Copy/Open controls and manual connection options as a fallback. Visiting it before or after connecting is not required. The short request fits Telegram's native CopyTextButton (256 characters); detailed protocol instructions remain in the skill/advanced fallback. No Open button sends the prompt automatically, and successful OAuth alone does not prove automatic execution.
 
 ## Installation and sign-in
 
@@ -26,9 +26,9 @@ When executing a saved owner task, the setup prompts instruct the AI to call `be
 
 ## ChatGPT Events
 
-The portable manifest declares `extensions.com.openai.onboardingSkill`. In supported Work clients the owner chooses Setup after installing ChatMate; this setup skill connects OAuth and subscribes in the same Work chat. Installation alone does not silently create an executor. The full prompt remains a fallback, not an additional required step.
+The portable manifest declares `extensions.com.openai.onboardingSkill`. In supported Work clients the owner chooses Setup or sends the short setup request; this provider-aware skill connects OAuth and subscribes in the same Work chat. The manifest does not guarantee a Setup button in every surface. Installation alone does not silently create an executor. The full prompt remains a fallback, not an additional required step.
 
-Use Work on ChatGPT web, or desktop Work with Cloud. The `chatgpt` prompt guides installation/authentication, verifies `get_connection_status` and `list_chats`, then asks ChatGPT to subscribe to `owner.message.created` and `approval.resolved` for the owner's bot chat. The provider supplies the callback and signing secret to MCP; the user does not copy these into chat. Monitoring is configured only after subscription succeeds and one owner task works. Unsupported clients can use the tools manually.
+Use Work on ChatGPT web; desktop Cloud requires an actual Events capability check. The setup skill (or full fallback prompt) guides installation/authentication, verifies `get_connection_status` and `list_chats`, then asks ChatGPT to subscribe to `owner.message.created` and `approval.resolved` for the owner's bot chat. The provider supplies the callback and signing secret to MCP; the user does not copy these into chat. Monitoring is configured only after subscription succeeds and one owner task works. Unsupported clients can use the tools manually.
 
 ## Claude Routine
 
