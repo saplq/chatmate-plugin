@@ -87,7 +87,7 @@ Use `telegram_action` for messages/replies, media/stickers, reactions, own-outpu
 
 Help with [setup.md](setup.md) and the English prompts in [setup-prompts.json](setup-prompts.json). The user confirms installation and completes Telegram OAuth/Allow themselves. Never request credentials or a Routine token in chat.
 
-ChatGPT automatic tasks need a successful MCP Events subscription in Work web or Work with Cloud. Claude automatic tasks need a separately configured Routine trigger; a local Code plugin does not connect the web account. `/schedule` does not create its API token. Only claim continuous monitoring or automatic fallback after that exact trigger is configured and tested. Select one active executor; a second connected AI is not an automatic reserve.
+In ChatGPT Work, use the plugin Setup after installation to connect and configure MCP Events in the same chat. ChatGPT automatic tasks need a successful MCP Events subscription in Work web or Work with Cloud. Check `get_connection_status.automation`: ready requires a delivered automatic test answer, not OAuth alone. Claude automatic tasks need a separately configured Routine trigger; a local Code plugin does not connect the web account. `/schedule` does not create its API token. The owner saves its URL/token at https://www.getchatmate.com/connect/claude, which supplies the saved Routine instructions; never ask for the token in chat. Only claim continuous monitoring or automatic fallback after that exact trigger is configured and tested. Select one active executor; a second connected AI is not an automatic reserve.
 
 ## Deliver results to Telegram
 

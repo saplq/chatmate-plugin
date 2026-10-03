@@ -5,18 +5,18 @@ Connect the Telegram chats you choose to your own AI. ChatMate supplies the mess
 ## Start in your bot
 
 1. Open [@chatmate_aibot](https://t.me/chatmate_aibot?start=setup), create your personal bot and connect your chats.
-2. Choose ChatGPT or Claude in that bot. It sends the complete setup prompt in a copyable code block, with options for ordinary Claude, local Claude Code and cloud Routines.
-3. Open the selected AI and send the prompt yourself. ChatGPT and ordinary Claude need you to paste it; the Claude Routine option opens a composer draft without sending it.
-4. Let the AI guide installation and connection. Confirm the installation source and scope, then complete Telegram sign-in and **Allow** yourself. Never paste credentials or tokens into an AI conversation. Verify `get_connection_status`, `list_chats` and one owner task before relying on the connection.
+2. Choose ChatGPT or Claude in that bot. For ChatGPT Work, install ChatMate and run its **Setup** step. Setup guides Telegram sign-in, access and the owner-message subscription in the same conversation. Use the copyable setup prompt only if your client has no Setup step.
+3. For a Claude cloud Routine, follow [the protected setup form](https://www.getchatmate.com/connect/claude). It supplies the saved Routine instructions and guides the API trigger generated in Claude’s web UI. Ordinary Claude and local Claude Code retain their guided setup prompts.
+4. Complete Telegram sign-in and **Allow** yourself. Never paste credentials or tokens into an AI conversation. Send one short task to your personal bot and check the automatic reply before relying on the connection.
 
 Full prompts and manual connection instructions are also available at [getchatmate.com/connect](https://www.getchatmate.com/connect).
 
 ## Choose an execution surface
 
-- **ChatGPT Work:** web Work or desktop Work with Cloud can subscribe through MCP Events when the surface supports them. Monitoring starts only after subscription succeeds. Ordinary chats and clients without Events support manual requests.
+- **ChatGPT Work:** web Work or desktop Work with Cloud uses native **Setup** after installation to configure MCP Events when the surface supports them. Monitoring starts only after subscription succeeds. Ordinary chats and clients without Events support manual requests.
 - **Claude web, desktop or mobile:** connect the account connector to read chats and make manual requests. OAuth alone does not start tasks when a Telegram message arrives.
 - **Local Claude Code:** install this plugin and authenticate its MCP connection. This connection is separate from your Claude web account and a cloud Routine environment.
-- **Claude cloud Routine:** choose a repository, environment and required account connectors. This release has no Routine trigger adapter or token setup form. Use **Run now** manually; automatic Telegram triggering remains incomplete. Supply the canonical owner message UUID as task context before claiming it.
+- **Claude cloud Routine:** choose a repository, environment and required account connectors, then create an API trigger in Claude’s web UI. Save its fire URL and token in [the protected setup form](https://www.getchatmate.com/connect/claude). ChatMate triggers the Routine with the canonical owner message UUID; the Routine claims the task, starts Thinking, updates its progress and accumulated answer, then returns one final reply. Cloud token-by-token streaming remains unverified.
 
 Use one active executor for Telegram tasks. Connecting two AIs does not configure automatic fallback.
 

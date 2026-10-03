@@ -1,7 +1,7 @@
 {
   "name": "chatmate",
   "displayName": "ChatMate",
-  "version": "0.10.0",
+  "version": "0.11.0",
   "description": "Connects your AI to your Telegram through your personal ChatMate bot: read the chats you connected, give tasks in the bot, and get answers, drafts and results back in Telegram.",
   "author": {
     "name": "ChatMate",
