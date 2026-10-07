@@ -1,9 +1,9 @@
 {
-  "description": "ChatMate reads and messages to the user's own bot chat run without a prompt each time. send_to_chat, which writes to other people, still asks.",
+  "description": "ChatMate reads and messages to the user's own bot chat, including confirmation cards, run without a prompt each time. send_to_chat and telegram_action, which write to other people, still ask.",
   "hooks": {
     "PreToolUse": [
       {
-        "matcher": "^mcp__.*[Cc]hat_?[Mm]ate.*__(get_connection_status|list_chats|get_messages|search_messages|get_message_context|list_people|get_attachment|get_approval_status|send_message|request_approval|begin_answer|update_answer|finish_answer|answer_status)$",
+        "matcher": "^mcp__.*[Cc]hat_?[Mm]ate.*__(get_connection_status|list_chats|get_messages|search_messages|get_message_context|list_people|list_owner_asks|get_attachment|get_approval_status|send_message|request_approval|propose_action|begin_answer|update_answer|finish_answer|answer_status)$",
         "hooks": [
           {
             "type": "command",

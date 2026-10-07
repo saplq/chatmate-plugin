@@ -22,7 +22,7 @@ The [connect page](https://www.getchatmate.com/connect) carries the same prompts
 - In ChatGPT: install/connect ChatMate through the available plugin settings or directory. Repository/local marketplaces depend on the client; do not claim a prompt silently installs a private plugin in consumer web. If unavailable, use the manual steps on the connect page.
 - The owner signs in with Telegram and clicks Allow in the existing OAuth page. Do not ask them to give the AI a Telegram code, password, session or token. After sign-in, verify `get_connection_status` and `list_chats` before claiming access.
 
-When executing a saved owner task, the setup prompts instruct the AI to call `begin_answer` before doing that task. Save its returned `answer_id` and keep the same `execution_id`: include both on every task-related `send_message`, `send_to_chat`, `request_approval` and `telegram_action` call. The server validates the pair and Stop blocks task actions that have not started. Standalone actions outside a claimed task omit both; never omit them to bypass Stop.
+When executing a saved owner task, the setup prompts instruct the AI to call `begin_answer` before doing that task. Save its returned `answer_id` and keep the same `execution_id`: include both on every task-related `send_message`, `send_to_chat`, `request_approval`, `telegram_action` and `propose_action` call. In ChatGPT Work a task's send to another chat goes through `propose_action`: the owner confirms the card in the bot and ChatMate sends it. The server validates the pair and Stop blocks task actions that have not started. Standalone actions outside a claimed task omit both; never omit them to bypass Stop.
 
 ## ChatGPT Events
 
@@ -38,9 +38,19 @@ In the web UI choose an API trigger, save the Routine, then Generate token. `/sc
 
 The fire API uses Claude Code subscription usage and returns a new session URL. It does not stream the answer and has no idempotency key; never retry an unknown fire blindly. Connecting GPT and Claude does not establish automatic fallback. Choose one executor; a reserve requires its own configured trigger and exclusive task claim.
 
+## Morning list (0.16)
+
+The owner can get a weekday list of who is waiting for their reply. The schedule lives at the AI provider and the owner controls it there; ChatMate sends nothing on its own. Copyable prompt (translate it, keep the tool names):
+
+```text
+Каждый будний день в 08:30: вызови list_owner_asks за последние 24 часа, собери список «ждут ответа» и «ты обещал» по моим сообщениям, пришли одним сообщением через send_message. На каждую просьбу, где ответ очевиден из переписки, предложи карточку через propose_action.
+```
+
+In Claude it is a cloud Routine with a schedule trigger (Pro and up; Weekdays at 08:30 in local time, at least one hour apart) at [Claude Code Routines](https://claude.ai/code/routines) or `/schedule`, with the ChatMate connector and no unneeded connectors. In ChatGPT it is a scheduled task where that surface offers one with ChatMate. Setup works only when one run delivers the list in the bot.
+
 ## Claude Code answer hooks
 
-Default installation has no display forwarding. Use explicit `update_answer` calls. The optional [example hooks](examples/claude-answer-hooks.json) are only for a dedicated Telegram-only Claude Code project/environment, after the user explicitly chooses it. Merge the example's `hooks` into that project's `.claude/settings.local.json`, preserving existing settings; never install it globally or in a general AI-chat environment. Enabling it sends every assistant display delta from that environment to ChatMate, including unbound text. Server binding restricts Telegram delivery but cannot prevent that initial transport. Claude documents no local conditional/stateful `mcp_tool` handler that filters MessageDisplay by a current task; `if` applies only to tool events, and MessageDisplay has no matchers.
+Default installation has no display forwarding: the server refreshes the Thinking draft itself, and explicit `update_answer` calls add progress for long work. The optional [example hooks](examples/claude-answer-hooks.json) are only for a dedicated Telegram-only Claude Code project/environment, after the user explicitly chooses it. Merge the example's `hooks` into that project's `.claude/settings.local.json`, preserving existing settings; never install it globally or in a general AI-chat environment. Enabling it sends every assistant display delta from that environment to ChatMate, including unbound text. Server binding restricts Telegram delivery but cannot prevent that initial transport. Claude documents no local conditional/stateful `mcp_tool` handler that filters MessageDisplay by a current task; `if` applies only to tool events, and MessageDisplay has no matchers.
 
 In the opt-in example, PostToolUse matches only `begin_answer`; it binds the original canonical owner `message_id` and `execution_id` from `tool_input` to the provider `session_id` and current `prompt_id`. It does not guess the shape of `tool_response`. MessageDisplay sends the same session/prompt plus its documented display `turn_id`, assistant `message_id`, `index`, `final` and `delta` to `stream_answer`. This reuses the configured OAuth MCP, with no script or extra hook secret.
 
