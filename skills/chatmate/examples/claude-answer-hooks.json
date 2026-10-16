@@ -1,5 +1,5 @@
 {
-  "description": "Optional Claude Code hooks for a dedicated Telegram-only environment. Every assistant display delta in that environment reaches ChatMate; the server forwards only bound task answers to Telegram. Do not enable in general AI chats.",
+  "description": "Deprecated: ChatMate no longer shows display text in Telegram (the server draws its own Thinking status), so these hooks have no visible effect. Do not install them; while enabled they still send every assistant display delta to ChatMate.",
   "hooks": {
     "PostToolUse": [
       {
