@@ -26,7 +26,7 @@ The Routine API trigger and its token must be created in Claude's web UI. `/sche
 When the owner wants a weekday list of who is waiting for their reply, give them this prompt to copy, in their language (keep the tool names):
 
 ```text
-Каждый будний день в 08:30 присылай мне в бот утренний список одним сообщением через send_message. Ждущих ответа бери из list_owner_asks за последние 24 часа, обещания и оплаты из list_loops, если он есть, иначе из переписки. Разделы «Ждут ответа», «Ты обещал», «Ты ждёшь» через пустую строку, пустые не пиши. У каждого имя и местное время из sent_at_local, а без него «3 часа назад», ниже одна строка, что нужно. Не объясняй, что проверил или пропустил. Если ничего не нужно, одна короткая строка. На каждую просьбу, где ответ очевиден из переписки, предложи карточку через propose_action.
+Каждый будний день в 08:30 присылай мне в бот утренний список одним сообщением через send_message. Сначала вызови catch_up за последние 24 часа, в нём ждущие ответа, обещания и новости всех чатов. Без catch_up ждущих бери из list_owner_asks за последние 24 часа, обещания и оплаты из list_loops, если он есть, иначе из переписки. Разделы «Ждут ответа», «Ты обещал», «Ты ждёшь» через пустую строку, пустые не пиши. У каждого имя и местное время из sent_at_local, а без него «3 часа назад», ниже одна строка, что нужно. Не объясняй, что проверил или пропустил. Если ничего не нужно, одна короткая строка. На каждую просьбу, где ответ очевиден из переписки, предложи карточку через propose_action.
 ```
 
 A run sends the owner one plain message in their bot. Sections are separated by a blank line and an empty section is left out; when nothing needs the owner, the message is one short line. For example:
