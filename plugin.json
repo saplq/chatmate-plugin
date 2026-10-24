@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "chatmate",
-  "version": "0.24.12",
+  "version": "0.24.13",
   "description": "Connects your AI to your Telegram through your personal ChatMate bot: read the chats you connected, give tasks in the bot, and get answers, drafts and results back in Telegram.",
   "author": {
     "name": "ChatMate",
@@ -41,7 +41,7 @@
         "logo": "./assets/logo.png"
       },
       "review": {
-        "demo_recording_url": "https://github.com/saplq/chatmate-plugin/releases/download/directory-demo-2026-10-24/chatmate-directory-demo.mp4",
+        "demo_recording_url": "https://github.com/saplq/chatmate-plugin/releases/tag/directory-demo-2026-10-24",
         "commerce": true,
         "test_cases": {
           "positive": [
@@ -64,10 +64,10 @@
               "expected_behavior": "Finds Bakery website team and reads the actual photo and voice attachment IDs/versions. Uses the prepared synthetic transcript returned by get_messages, or reads it through get_attachment if needed; a separate voice attachment call is not required when the complete transcript is already present. Calls get_attachment for the gallery image and inspects the returned PNG, describing six illustrated cakes arranged in two rows. Reports the transcript facts about six cake photos and the Friday mockup before noon. Identifies the material as reviewer fixtures and does not claim to have listened to original audio, performed ASR or used minutes. Names the source chat and actual returned authors/dates; does not infer private information or send a message."
             },
             {
-              "description": "Setup: use only the synthetic reviewer workspace and start outside a claimed bot task. First run the prompt below and inspect its draft. Then issue this separate exact follow-up: \"Send Anna exactly: Thanks, Anna. I will review the cake gallery idea and reply here.\" Native client write controls remain in force and may lead to an owner approval card. Reviewer send_to_chat results are simulated, and propose_action remains awaiting_owner; neither contacts Telegram. No approval tap is fabricated, and a client permission denial must not be bypassed.",
+              "description": "Setup: use only the synthetic reviewer workspace and start outside a claimed bot task. First run the prompt below and inspect its draft. Then issue this separate exact follow-up: \"Send Anna exactly: Thanks, Anna. I will review the cake gallery idea and reply here.\" Native client write controls remain in force and may lead to an owner approval card. Reviewer send_to_chat results are simulated, and propose_send_text remains awaiting_owner; neither contacts Telegram. No approval tap is fabricated, and a client permission denial must not be bypassed.",
               "prompt": "Draft a short reply to Anna about her cake gallery idea in my usual style. Show me the draft without sending it.",
-              "tools_triggered": "list_chats, get_messages, owner_voice; send_to_chat or propose_action",
-              "expected_behavior": "Reads Anna's conversation and owner_voice for that chat, then shows a draft with no send or proposal before the follow-up. After the separate exact instruction, resolves Anna's canonical chat_id and keeps exactly the requested text. Subject to native client permissions, either calls send_to_chat or creates a propose_action card, with a stable idempotency_key for that intent. A proposal with awaiting_owner remains waiting: no delivery and no fabricated approval. Once approval is engaged, do not switch tools or attempt a direct send to circumvent it. Preserve and honestly report a client permission denial without bypass or automatic retry. Only an actual sent result marked simulated may be described as a simulated reviewer-sandbox delivery; it never proves real Telegram delivery. Pending, awaiting_owner, unknown and failed are not sent, and unknown delivery must not be resent."
+              "tools_triggered": "list_chats, get_messages, owner_voice; send_to_chat or telegram_send_text or propose_send_text",
+              "expected_behavior": "Reads Anna's conversation and owner_voice for that chat, then shows a draft with no send or proposal before the follow-up. After the separate exact instruction, resolves Anna's canonical chat_id and keeps exactly the requested text. Subject to native client permissions, either calls send_to_chat or telegram_send_text, or creates a propose_send_text card, with chat_id, text and a stable idempotency_key at the top level, without operation or payload, for that intent. A proposal with awaiting_owner remains waiting: no delivery and no fabricated approval. Once approval is engaged, do not switch tools or attempt a direct send to circumvent it. Preserve and honestly report a client permission denial without bypass or automatic retry. Only an actual sent result marked simulated may be described as a simulated reviewer-sandbox delivery; it never proves real Telegram delivery. Pending, awaiting_owner, unknown and failed are not sent, and unknown delivery must not be resent."
             },
             {
               "description": "Setup: use only the synthetic reviewer workspace. Find its owner_private chat from list_chats. After a successful send, a controlled tool-level retry may repeat the identical send_message arguments with the same idempotency_key; do not treat a second independent user instruction as that retry. Sandbox messages appear only in My ChatMate and are not delivered to Telegram.",
@@ -99,7 +99,7 @@
         ]
       },
       "publication": {
-        "release_notes": "ChatMate 0.24.12 updates directory review paths verified in Claude: bounded catch-up and prepared transcripts are accepted, approval cards retain awaiting_owner, and client permission denials are respected. Backend 0.26.12 adds tool annotation titles and instructions to save facts actually observed in images through describe_attachment. OpenAI and Claude packages retain the same skills and isolated synthetic media/simulated-send fixtures.",
+        "release_notes": "ChatMate 0.24.13 introduces separate, flat MCP tools for every native Telegram action and owner proposal, and begin_digest_review, compare_digest_review and finish_digest_review for daily digests. Backend 0.26.13 advertises validate_display_batch for deprecated display validation. Existing calls and saved schedules remain compatible; access checks, task Stop, client permissions, idempotency and delivery statuses are unchanged. Regenerated assets use the current ChatMate character icon.",
         "countries": []
       },
       "onboardingSkill": "./skills/chatmate-setup/SKILL.md"
