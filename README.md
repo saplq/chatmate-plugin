@@ -25,6 +25,12 @@ Reload plugins or start a new session, open `/mcp`, and complete Telegram authen
 
 The package contains the `chatmate` workflow and `chatmate-setup` onboarding skill. Directory bundles contain no automatic permission or assistant display hooks. If an older installation enabled display hooks, remove them: they are deprecated and can forward assistant display text from that environment.
 
+## Sending files
+
+When you ask your AI to send a file to Telegram, the `chatmate` skill uses the `prepare_file` tool. Small text files and tiny files travel inside that call to the MCP endpoint above. For a public https link or a ChatGPT conversation file, ChatMate's server downloads it, up to 50 MB; the link itself is not stored. For a local file in a client with a shell, such as Claude Code, the skill runs `shasum -a 256` (or `sha256sum`) on the file you named and one `curl` PUT of its bytes to a single-file signed URL on ChatMate's own Supabase Storage (`https://mdcmblzmvvylmrmrbqhv.supabase.co`), valid for two hours. It runs no other command from a tool result.
+
+ChatMate keeps a prepared file for that AI connection only, for 24 hours or until two hours after its latest send or confirmation card if that is later, then deletes it; the sent copy stays in Telegram and in your ChatMate history. In Claude web, desktop and mobile chat, the code sandbox usually cannot reach that storage, so from there you can send text files, tiny files and public links; use Claude Code for larger documents and presentations.
+
 ## Help and data controls
 
 Visit [My data](https://www.getchatmate.com/data-controls) to manage connected-chat access, revoke a connection, or request the available export and deletion controls. Read the [privacy policy](https://www.getchatmate.com/en/privacy) and [terms](https://www.getchatmate.com/en/terms), or contact [support](https://www.getchatmate.com/en/support).
