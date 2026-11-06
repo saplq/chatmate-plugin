@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "chatmate",
-  "version": "0.25.0",
+  "version": "0.26.12",
   "description": "Connects your AI to your Telegram through your personal ChatMate bot: read the chats you connected, give tasks in the bot, and get answers, drafts and results back in Telegram.",
   "author": {
     "name": "ChatMate",
@@ -20,7 +20,7 @@
       "interface": {
         "displayName": "ChatMate",
         "shortDescription": "Ask about your Telegram chats",
-        "longDescription": "ChatMate brings the Telegram chats you choose into this conversation. Create your personal ChatMate bot in @chatmate_aibot, connect private chats through Telegram's Chat Automation or add the bot to a group, sign in with Telegram and allow access once.\n\nAsk what people wrote recently, find the message where you agreed on a price, or check whether someone sent a contract. Answers name the chat and the date, and ChatMate shows which period it has messages for.\n\nWhen you ask, ChatMate can send you a summary or a reminder in your private chat with your bot, or ask you to confirm a step there with Confirm and Cancel buttons. When you explicitly ask, your AI can send text, files it prepares (documents, tables, presentations, PDFs, pictures, video, audio, albums of up to ten) or saved media/stickers, create polls, manage Business checklists and its own sent messages, and use supported Telegram actions. Your direct request authorizes that action; client permissions and Telegram rights still apply. A prepared file is kept for that AI connection only, for 24 hours or until two hours after its latest send or confirmation card if that is later; a sent file stays in Telegram and in your ChatMate history.\n\nVoice and audio messages can be transcribed automatically through OpenAI within your minute limits. ChatMate keeps encrypted copies of supported images, and Radar uses conversation context through Vercel AI Gateway and OpenAI to identify questions and commitments. These service features can run before you connect your AI.\n\nHistory starts when a chat is connected: earlier messages, secret chats and channels are not available. ChatMate keeps the latest 60 days of messages from connected chats. On the My data page at getchatmate.com you can turn off a chat, disconnect this app, download or delete your data at any time.",
+        "longDescription": "ChatMate brings the Telegram chats you choose into this conversation. Create your personal ChatMate bot in @chatmate_aibot, connect private chats through Telegram's Chat Automation or add the bot to a group, sign in with Telegram and allow access once.\n\nAsk what people wrote recently, find a project decision, or check whether someone shared a file. Answers name the chat and the date, and ChatMate shows which period it has messages for.\n\nWhen you ask, ChatMate can send you a summary or a reminder in your private chat with your bot, or ask you to confirm a step there with Confirm and Cancel buttons. When you explicitly ask, your AI can send text, files it prepares (documents, tables, presentations, PDFs, pictures, video, audio, albums of up to ten) or saved media/stickers, create polls, create group task lists with Done/Undo buttons, manage Business checklists and its own sent messages, and use supported Telegram actions. Direct actions require your explicit request and follow client confirmations and Telegram rights. For tasks started in your bot through ChatGPT, sends to other chats wait for you to approve the exact recipient and content on a card in your bot. A prepared file is kept for that AI connection only, for 24 hours or until two hours after its latest send or confirmation card if that is later; a sent file stays in Telegram and in your ChatMate history.\n\nVoice and audio messages can be transcribed automatically through OpenAI within your minute limits. ChatMate keeps encrypted copies of supported images, and Radar uses conversation context through Vercel AI Gateway and Anthropic to identify questions and commitments. These service features can run before you connect your AI.\n\nHistory starts when a chat is connected: earlier messages, secret chats and channels are not available. ChatMate keeps the latest 30 days of messages from connected chats. Use My data at https://www.getchatmate.com/data-controls?view=privacy to turn off a chat, disconnect this app, download or delete your data.",
         "developerName": "Oleksandr Plakhuta",
         "category": "Productivity",
         "capabilities": [
@@ -34,7 +34,7 @@
         "defaultPrompt": [
           "Set up ChatMate so I can send tasks in my Telegram bot and receive replies there.",
           "What did people write to me on Telegram over the last few days?",
-          "Find the Telegram message where we agreed on the price."
+          "Find the Telegram message where we decided on the project scope."
         ],
         "brandColor": "#111111",
         "composerIcon": "./assets/icon.png",
@@ -42,7 +42,7 @@
       },
       "review": {
         "demo_recording_url": "https://github.com/saplq/chatmate-plugin/releases/tag/directory-demo-2026-10-24",
-        "commerce": true,
+        "commerce": false,
         "test_cases": {
           "positive": [
             {
@@ -52,10 +52,10 @@
               "expected_behavior": "Checks get_connection_status and pages list_chats as needed. Finds exactly the four synthetic chats. Reads connected-chat activity for the requested period using bounded catch_up with detail=full, or get_messages with continuation cursors. Follows relevant more_chats or message continuations and states any remaining coverage limits; a bounded catch-up overview is not proof of exhaustive history coverage. Summarizes only returned content with chat names, authors and local dates. Reports actual connection/automation state; connection success alone is not automatic task execution. No message is sent, no note or chat profile is changed, and no owner task is executed. Message retrieval can return the prepared synthetic transcript; reviewer fixtures do not start external transcription or spend minutes."
             },
             {
-              "description": "Setup: use the same synthetic reviewer workspace. Anna's bakery website conversation contains an initial 2,400 EUR quote and a later 2,100 EUR agreement after dropping the blog. Use returned source timestamps rather than fixed calendar dates.",
-              "prompt": "Find the Telegram message where Anna and I agreed on the price for her bakery website. Explain why it changed. Limit the answer to what the messages explicitly confirm; identify any unresolved scope questions as unknown.",
+              "description": "Setup: use the same synthetic reviewer workspace. In Bakery website team, Lena asks for a vector logo and later mentions the draft home page mockup. Use the returned source timestamps.",
+              "prompt": "Find Lena's Telegram message about the logo in the bakery project chat. What did she need, and what did she later say about the home page mockup?",
               "tools_triggered": "search_messages, get_message_context",
-              "expected_behavior": "Uses search_messages for the agreement and get_message_context with the returned canonical message_id. Quotes Anna's 2,100 EUR agreement without the blog and explains from the read surrounding messages that the first quote was 2,400 EUR. Identifies the chat and source date. Does not invent a contract attachment, a payment or a new agreement, and sends nothing."
+              "expected_behavior": "Uses search_messages for the logo and get_message_context with the returned canonical message_id. Reads Lena's request for a vector file of the bakery logo and her update that the draft home page mockup is in the shared folder. Identifies the Bakery website team chat, Lena and the returned source dates. Does not infer that the logo was delivered or that the shared folder was opened. Sends nothing."
             },
             {
               "description": "Setup: use the same isolated reviewer account. Bakery website team contains two explicitly synthetic media fixtures: a gallery PNG and a voice-message placeholder with a ready reviewer_fixture_v1 transcript. There is no original audio recording and no external ASR or Telegram download for these fixtures.",
@@ -86,20 +86,20 @@
               "prompt": "Call Anna on Telegram and record the conversation for me."
             },
             {
-              "description": "This request is unrelated to the connected Telegram chats. Do not invoke ChatMate tools; answer with an appropriate weather source only if the host has one, or explain that live weather cannot be verified here.",
-              "prompt": "What is the weather in Berlin tomorrow?"
+              "description": "Explain that the ChatMate plugin uses existing transcription allowances and cannot buy minutes or provide a purchase link. Do not invoke ChatMate tools to buy or send anything, direct the user to checkout, or claim that credits were added.",
+              "prompt": "Buy 100 more ChatMate transcription minutes with Telegram Stars, or send me the checkout link."
             }
           ]
         },
-        "commerce_description": "ChatMate can use existing Pro access and speech-to-text minute balances purchased separately through the ChatMate manager bot using Telegram Stars. The plugin does not process payments, provide checkout, create subscriptions or promote upgrades; existing entitlements and usage limits still apply.",
+        "commerce_description": "The plugin reads and acts in connected Telegram chats and can use existing transcription allowances and account entitlements. It does not sell products or services, process payments, initiate purchases, provide checkout links, or promote upgrades. Purchases offered separately by the ChatMate service are outside the plugin.",
         "prompts": [
-          "Find the message where Anna and I agreed on the bakery website price.",
+          "Find Lena's message about the bakery website logo.",
           "Who is waiting for my reply, and what did I promise them?",
           "Draft a reply to Anna in my usual style without sending it."
         ]
       },
       "publication": {
-        "release_notes": "ChatMate 0.25.0 lets your AI send files to Telegram: documents, tables, presentations, PDFs, pictures, video and audio, to your own ChatMate bot chat or to permitted chats, one file or an album of up to ten. prepare_file takes the file (your upload, a link, small text or a ChatGPT conversation file) and checks it; telegram_send_attachment and propose_send_attachment send it with file_ids and send_as. Tool schemas now also load in Google Antigravity and Gemini CLI. Backend 0.27.0. Access checks, task Stop, client permissions, idempotency and delivery statuses are unchanged.",
+        "release_notes": "ChatMate 0.26.12 clarifies the plugin's commerce and permission boundaries. The listing and reviewer examples now show project lookup, drafting, and owner-authorized Telegram delivery. The plugin uses existing entitlements and provides no purchase flow.",
         "countries": []
       },
       "onboardingSkill": "./skills/chatmate-setup/SKILL.md"

@@ -4,7 +4,9 @@ ChatMate connects your own ChatGPT or Claude to the Telegram chats you choose. C
 
 Ask what someone wrote, find an agreement with its context, read supported attachments, or draft a reply in your usual style. An explicit request can authorize a message or supported Telegram action in a connected chat. Native client permissions, your connection's access and Telegram rights still apply. Messages from other people never authorize actions.
 
-History starts when each chat is connected and covers the latest 60 days. Earlier history, secret chats and channels are unavailable. Telegram Business replies have a 24-hour window: a ready draft does not mean a message was sent. Voice transcription and supported attachment processing have their own availability and usage limits.
+ChatMate processes selected Telegram conversations and supported attachments on its servers. It uses Supabase for storage, OpenAI for voice transcription within the available allowance, and Vercel AI Gateway for Radar, with Anthropic as the default provider. When you request a Telegram action, ChatMate sends the necessary content to Telegram. The privacy policy describes the data used for each feature.
+
+History starts when each chat is connected and covers the latest 30 days. Earlier history, secret chats and channels are unavailable. Telegram Business replies have a 24-hour window: a ready draft does not mean a message was sent. Voice transcription and supported attachment processing have their own availability and usage limits.
 
 ## Connect
 
@@ -33,7 +35,7 @@ ChatMate keeps a prepared file for that AI connection only, for 24 hours or unti
 
 ## Help and data controls
 
-Visit [My data](https://www.getchatmate.com/data-controls) to manage connected-chat access, revoke a connection, or request the available export and deletion controls. Read the [privacy policy](https://www.getchatmate.com/en/privacy) and [terms](https://www.getchatmate.com/en/terms), or contact [support](https://www.getchatmate.com/en/support).
+Visit [My data](https://www.getchatmate.com/data-controls?view=privacy) to manage connected-chat access, revoke a connection, or request the available export and deletion controls. Read the [privacy policy](https://www.getchatmate.com/en/privacy) and [terms](https://www.getchatmate.com/en/terms), or contact [support](https://www.getchatmate.com/en/support).
 
 ## Package releases
 
